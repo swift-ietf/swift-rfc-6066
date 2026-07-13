@@ -1,0 +1,93 @@
+// swift-tools-version: 6.3.3
+
+import PackageDescription
+
+extension String {
+    static let rfc6066: Self = "RFC 6066"
+}
+
+extension Target.Dependency {
+    static var rfc6066: Self { .target(name: .rfc6066) }
+    static var rfc8446: Self { .product(name: "RFC 8446", package: "swift-rfc-8446") }
+    static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
+    static var incits41986: Self { .product(name: "ASCII Primitives", package: "swift-ascii-primitives") }
+    static var binary: Self { .product(name: "Binary Primitives", package: "swift-binary-primitives") }
+    static var binarySerializable: Self { .product(name: "Binary Serializable Primitives", package: "swift-binary-serializer-primitives") }
+    static var bytePrimitivesSLI: Self { .product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives") }
+}
+
+let package = Package(
+    name: "swift-rfc-6066",
+    platforms: [
+        .macOS(.v26),
+        .iOS(.v26),
+        .tvOS(.v26),
+        .watchOS(.v26),
+        .visionOS(.v26)
+    ],
+    products: [
+        .library(name: "RFC 6066", targets: ["RFC 6066"]),
+        .library(name: "RFC 6066 Standard Library Integration", targets: ["RFC 6066 Standard Library Integration"]),
+    ],
+    dependencies: [
+        .package(url: "https://github.com/swift-ietf/swift-rfc-8446.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git", branch: "main"),
+        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main")
+    ],
+    targets: [
+        .target(
+            name: "RFC 6066",
+            dependencies: [
+                .rfc8446,
+                .standards,
+                .incits41986,
+                .binary,
+                .binarySerializable
+            ]
+        ),
+        .target(
+            name: "RFC 6066 Standard Library Integration",
+            dependencies: [
+                .rfc6066,
+                .bytePrimitivesSLI,
+            ]
+        ),
+        .testTarget(
+            name: "RFC 6066 Tests",
+            dependencies: [
+                "RFC 6066",
+            ]
+        ),
+        .testTarget(
+            name: "RFC 6066 Standard Library Integration Tests",
+            dependencies: [
+                "RFC 6066",
+                "RFC 6066 Standard Library Integration",
+            ]
+        ),
+    ],
+    swiftLanguageModes: [.v6]
+)
+
+extension String {
+    var tests: Self { self + " Tests" }
+}
+
+for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
+    let ecosystem: [SwiftSetting] = [
+        .strictMemorySafety(),
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("InternalImportsByDefault"),
+        .enableUpcomingFeature("MemberImportVisibility"),
+        .enableUpcomingFeature("NonisolatedNonsendingByDefault"),
+        .enableExperimentalFeature("Lifetimes"),
+        .enableExperimentalFeature("SuppressedAssociatedTypes"),
+    ]
+
+    let package: [SwiftSetting] = []
+
+    target.swiftSettings = (target.swiftSettings ?? []) + ecosystem + package
+}
