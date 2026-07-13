@@ -43,8 +43,7 @@ extension RFC_6066 {
     ///
     /// This type serializes the **body** (`extension_data` contents) only, not
     /// the `extension_type` + length envelope — the RFC 8446 payload convention.
-    /// (Note the divergence from `RFC_7301.Extension`, which serializes the whole
-    /// envelope.) Use ``extensionData`` to lift the body into an
+    /// Use ``extensionData`` to lift the body into an
     /// ``RFC_8446/Extension/Data``.
     ///
     /// ## Example
