@@ -10,10 +10,9 @@ extension Target.Dependency {
     static var rfc6066: Self { .target(name: .rfc6066) }
     static var rfc8446: Self { .product(name: "RFC 8446", package: "swift-rfc-8446") }
     static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
-    static var incits41986: Self { .product(name: "ASCII Primitives", package: "swift-ascii-primitives") }
-    static var binary: Self { .product(name: "Binary Primitives", package: "swift-binary-primitives") }
-    static var binarySerializable: Self { .product(name: "Binary Serializable Primitives", package: "swift-binary-serializer-primitives") }
-    static var bytePrimitivesSLI: Self { .product(name: "Byte Primitives Standard Library Integration", package: "swift-byte-primitives") }
+    static var incits41986: Self { .product(name: "ASCII", package: "swift-ascii") }
+    static var binary: Self { .product(name: "Binary", package: "swift-binary") }
+    static var bytePrimitivesSLI: Self { .product(name: "Byte", package: "swift-byte") }
 }
 
 let package = Package(
@@ -31,11 +30,10 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/swift-ietf/swift-rfc-8446.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-standard-library-extensions.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-ascii-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-binary-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-binary-serializer-primitives.git", branch: "main"),
-        .package(url: "https://github.com/swift-primitives/swift-byte-primitives.git", branch: "main")
+        .package(url: "https://github.com/swift-atoms/swift-standard-library-extensions.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-binary.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main")
     ],
     targets: [
         .target(
@@ -44,8 +42,7 @@ let package = Package(
                 .rfc8446,
                 .standards,
                 .incits41986,
-                .binary,
-                .binarySerializable
+                .binary
             ]
         ),
         .target(
