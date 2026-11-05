@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Binary_Serializable_Primitives
+import Binary
 import Testing
 
 @testable import RFC_6066
@@ -19,11 +19,11 @@ import Testing
 struct RFC_6066_ServerName_Tests {
 
     /// "example.com" — the running example for the byte-exact vectors below.
-    static let exampleCom: [Byte] = [0x65, 0x78, 0x61, 0x6D, 0x70, 0x6C, 0x65, 0x2E, 0x63, 0x6F, 0x6D]
+    static let exampleCom: [Byte] = [Byte(0x65), Byte(0x78), Byte(0x61), Byte(0x6D), Byte(0x70), Byte(0x6C), Byte(0x65), Byte(0x2E), Byte(0x63), Byte(0x6F), Byte(0x6D)]
 
     /// The full `server_name` `extension_data` body for "example.com":
     /// server_name_list length (14) | name_type (0) | host_name length (11) | "example.com"
-    static let body: [Byte] = [0x00, 0x0E, 0x00, 0x00, 0x0B] + exampleCom
+    static let body: [Byte] = [Byte(0x00), Byte(0x0E), Byte(0x00), Byte(0x00), Byte(0x0B)] + exampleCom
 
     @Suite("HostName")
     struct HostNameTests {
@@ -41,7 +41,7 @@ struct RFC_6066_ServerName_Tests {
             var buffer: [Byte] = []
             RFC_6066.HostName.serialize(hostName, into: &buffer)
 
-            let expected: [Byte] = [0x00, 0x0B] + RFC_6066_ServerName_Tests.exampleCom
+            let expected: [Byte] = [Byte(0x00), Byte(0x0B)] + RFC_6066_ServerName_Tests.exampleCom
             #expect(buffer == expected)
         }
 
@@ -94,7 +94,7 @@ struct RFC_6066_ServerName_Tests {
             var buffer: [Byte] = []
             RFC_6066.ServerName.serialize(serverName, into: &buffer)
 
-            let expected: [Byte] = [0x00, 0x00, 0x0B] + RFC_6066_ServerName_Tests.exampleCom
+            let expected: [Byte] = [Byte(0x00), Byte(0x00), Byte(0x0B)] + RFC_6066_ServerName_Tests.exampleCom
             #expect(buffer == expected)
         }
 
@@ -107,7 +107,7 @@ struct RFC_6066_ServerName_Tests {
         @Test
         func `Rejects unknown name_type`() {
             // name_type = 1 (undefined), then a 1-byte name.
-            let bytes: [Byte] = [0x01, 0x00, 0x01, 0x61]
+            let bytes: [Byte] = [Byte(0x01), Byte(0x00), Byte(0x01), Byte(0x61)]
             #expect(throws: RFC_6066.ServerName.Error.unknownNameType(1)) {
                 try RFC_6066.ServerName(binary: bytes)
             }
@@ -127,14 +127,14 @@ struct RFC_6066_ServerName_Tests {
         @Test
         func `Wraps into an RFC 8446 extension envelope`() throws {
             let list = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
-            let ext = list.extensionData
+            let ext = try list.extensionData
 
             #expect(ext.type == .serverName)
             #expect(ext.type.rawValue == 0)
             #expect(ext.data == RFC_6066_ServerName_Tests.body)
 
             // extension_type (0x0000) | extension_data length (16) | body
-            let expected: [Byte] = [0x00, 0x00, 0x00, 0x10] + RFC_6066_ServerName_Tests.body
+            let expected: [Byte] = [Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x10)] + RFC_6066_ServerName_Tests.body
             #expect(ext.bytes == expected)
         }
 
@@ -157,7 +157,7 @@ struct RFC_6066_ServerName_Tests {
                 try RFC_6066.ServerNameList(serverNameList: [])
             }
             // …and on the wire: a zero-length server_name_list.
-            let zeroLength: [Byte] = [0x00, 0x00]
+            let zeroLength: [Byte] = [Byte(0x00), Byte(0x00)]
             #expect(throws: RFC_6066.ServerNameList.Error.empty) {
                 try RFC_6066.ServerNameList(binary: zeroLength)
             }
@@ -176,7 +176,7 @@ struct RFC_6066_ServerName_Tests {
         @Test
         func `Rejects an unknown name_type on the wire`() {
             // list length (4) | name_type (1 — undefined) | name length (1) | 'a'
-            let bytes: [Byte] = [0x00, 0x04, 0x01, 0x00, 0x01, 0x61]
+            let bytes: [Byte] = [Byte(0x00), Byte(0x04), Byte(0x01), Byte(0x00), Byte(0x01), Byte(0x61)]
             #expect(throws: RFC_6066.ServerNameList.Error.unknownNameType(1)) {
                 try RFC_6066.ServerNameList(binary: bytes)
             }
@@ -184,7 +184,7 @@ struct RFC_6066_ServerName_Tests {
 
         @Test
         func `Rejects a truncated body`() {
-            let bytes: [Byte] = [0x00, 0x0E, 0x00]
+            let bytes: [Byte] = [Byte(0x00), Byte(0x0E), Byte(0x00)]
             #expect(throws: RFC_6066.ServerNameList.Error.truncated) {
                 try RFC_6066.ServerNameList(binary: bytes)
             }
@@ -192,7 +192,7 @@ struct RFC_6066_ServerName_Tests {
 
         @Test
         func `Rejects trailing bytes`() {
-            let bytes: [Byte] = RFC_6066_ServerName_Tests.body + [0xFF]
+            let bytes: [Byte] = RFC_6066_ServerName_Tests.body + [Byte(0xFF)]
             #expect(throws: RFC_6066.ServerNameList.Error.trailingData(1)) {
                 try RFC_6066.ServerNameList(binary: bytes)
             }
@@ -216,7 +216,7 @@ struct RFC_6066_ServerName_Tests {
             #expect(ext.data.isEmpty)
 
             // extension_type (0x0000) | extension_data length (0)
-            let expected: [Byte] = [0x00, 0x00, 0x00, 0x00]
+            let expected: [Byte] = [Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x00)]
             #expect(ext.bytes == expected)
         }
 
@@ -228,7 +228,7 @@ struct RFC_6066_ServerName_Tests {
 
         @Test
         func `Rejects a non-empty body`() {
-            let bytes: [Byte] = [0x00]
+            let bytes: [Byte] = [Byte(0x00)]
             #expect(throws: RFC_6066.ServerNameList.Acknowledgement.Error.trailingData(1)) {
                 try RFC_6066.ServerNameList.Acknowledgement(binary: bytes)
             }

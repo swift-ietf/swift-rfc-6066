@@ -1,4 +1,4 @@
-// swift-tools-version: 6.3.3
+// swift-tools-version: 6.4
 
 import PackageDescription
 
@@ -18,11 +18,11 @@ extension Target.Dependency {
 let package = Package(
     name: "swift-rfc-6066",
     platforms: [
-        .macOS(.v26),
-        .iOS(.v26),
-        .tvOS(.v26),
-        .watchOS(.v26),
-        .visionOS(.v26)
+        .macOS(.v27),
+        .iOS(.v27),
+        .tvOS(.v27),
+        .watchOS(.v27),
+        .visionOS(.v27)
     ],
     products: [
         .library(name: "RFC 6066", targets: ["RFC 6066"]),
@@ -32,7 +32,7 @@ let package = Package(
         .package(url: "https://github.com/swift-ietf/swift-rfc-8446.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-standard-library-extensions.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main"),
-        .package(url: "https://github.com/swift-atoms/swift-binary.git", branch: "main"),
+        .package(url: "https://github.com/swift-atoms/swift-binary.git", branch: "main", traits: ["Serializer"]),
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main")
     ],
     targets: [
@@ -55,6 +55,7 @@ let package = Package(
         .testTarget(
             name: "RFC 6066 Tests",
             dependencies: [
+                .binary,
                 "RFC 6066",
             ]
         ),

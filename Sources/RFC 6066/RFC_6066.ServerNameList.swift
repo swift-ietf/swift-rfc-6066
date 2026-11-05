@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 3: Server Name Indication
 
-public import Binary_Serializable_Primitives
+public import Binary
 public import RFC_8446
 
 extension RFC_6066 {
@@ -50,7 +50,7 @@ extension RFC_6066 {
     ///
     /// ```swift
     /// let sni = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
-    /// let ext = sni.extensionData      // type == .serverName
+    /// let ext = try sni.extensionData      // type == .serverName
     /// ```
     public struct ServerNameList: Sendable, Hashable {
         /// The offered server names.
@@ -99,8 +99,13 @@ extension RFC_6066 {
         public static let extensionType: RFC_8446.Extension.ExtensionType = .serverName
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
+        ///
+        /// - Throws: ``RFC_8446/Extension/Data/Error`` if the body exceeds the
+        ///   envelope's 65535-byte limit.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            get throws(RFC_8446.Extension.Data.Error) {
+                try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            }
         }
     }
 }
@@ -123,7 +128,7 @@ extension RFC_6066.ServerNameList: Binary.Serializable {
     ///
     /// The server's response body is empty and parses as
     /// ``RFC_6066/ServerNameList/Acknowledgement`` instead.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
         let block: [Byte]

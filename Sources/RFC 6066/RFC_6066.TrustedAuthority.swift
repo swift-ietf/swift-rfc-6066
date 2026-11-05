@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 6: Trusted CA Indication
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066 {
     /// One trusted certificate authority of a `trusted_ca_keys` payload.

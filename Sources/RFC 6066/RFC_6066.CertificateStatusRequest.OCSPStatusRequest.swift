@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 8: Certificate Status Request
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066.CertificateStatusRequest {
     /// The `ocsp` variant of a `status_request`.

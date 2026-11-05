@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 8: Certificate Status Request (server response)
 
-public import Binary_Serializable_Primitives
+public import Binary
 public import RFC_8446
 
 extension RFC_6066 {
@@ -83,7 +83,9 @@ extension RFC_6066 {
         /// Wraps this response in a generic ``RFC_8446/Extension/Data`` envelope —
         /// the TLS 1.3 `CertificateEntry` form (RFC 8446 Section 4.4.2.1).
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            get throws(RFC_8446.Extension.Data.Error) {
+                try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            }
         }
     }
 }
@@ -101,7 +103,7 @@ extension RFC_6066.CertificateStatus: Binary.Serializable {
 
     /// Parses a `CertificateStatus` structure (handshake-message body in TLS 1.2,
     /// `status_request` `extension_data` in TLS 1.3).
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
 

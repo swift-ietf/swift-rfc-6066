@@ -15,9 +15,9 @@
 // Stdlib-interop UInt8 forwarder for OCSP status request construction. Primary
 // byte-domain API lives in `RFC 6066`; this forwarder bridges stdlib callers
 // carrying `[UInt8]` DER (responder IDs, request extensions) via
-// `[Byte](uint8s)`. Per [API-BYTE-007] (byte-discipline skill).
+// bit pattern. Per [API-BYTE-007] (byte-discipline skill).
 
-internal import Byte_Primitives
+internal import Byte
 public import RFC_6066
 
 extension RFC_6066.CertificateStatusRequest.OCSPStatusRequest {
@@ -25,8 +25,8 @@ extension RFC_6066.CertificateStatusRequest.OCSPStatusRequest {
     @_disfavoredOverload
     public init(responderIDList: [[UInt8]], requestExtensions: [UInt8]) {
         self.init(
-            responderIDList: responderIDList.map { [Byte]($0) },
-            requestExtensions: [Byte](requestExtensions)
+            responderIDList: responderIDList.map { $0.map(Byte.init(bitPattern:)) },
+            requestExtensions: requestExtensions.map(Byte.init(bitPattern:))
         )
     }
 }

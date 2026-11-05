@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 5: Client Certificate URLs
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066 {
     /// The `CertificateURL` handshake message body (handshake type 21).
@@ -90,7 +90,7 @@ extension RFC_6066.CertificateURL: Binary.Serializable {
     }
 
     /// Parses a `CertificateURL` handshake message body.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
 
@@ -119,7 +119,7 @@ extension RFC_6066.CertificateURL: Binary.Serializable {
                 case .truncated, .lengthOverflow: throw .truncated
                 }
             }
-            guard fields.padding == URLAndHash.padding.underlying else {
+            guard fields.padding == URLAndHash.padding.bitPattern else {
                 throw .invalidPadding(fields.padding)
             }
             let hash = RFC_6066.SHA1Hash(__unchecked: (), rawValue: fields.sha1Hash)

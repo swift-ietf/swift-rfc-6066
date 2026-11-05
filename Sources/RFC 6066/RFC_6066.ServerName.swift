@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 3: Server Name Indication
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066 {
     /// A single `ServerName` entry of the `server_name` extension.
@@ -64,7 +64,7 @@ extension RFC_6066.ServerName: Binary.Serializable {
     }
 
     /// Parses exactly one `ServerName` structure.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
         let fields: (nameType: UInt8, name: [Byte])

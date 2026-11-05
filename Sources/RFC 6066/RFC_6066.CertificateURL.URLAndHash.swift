@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 5: Client Certificate URLs
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066.CertificateURL {
     /// One URL of a `CertificateURL` message, with the SHA-1 hash of the object

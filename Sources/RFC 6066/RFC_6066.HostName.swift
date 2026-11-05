@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 3: Server Name Indication
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066 {
     /// `HostName` — the fully qualified DNS hostname of the server.
@@ -62,7 +62,7 @@ extension RFC_6066 {
             guard rawValue.count <= 65535 else {
                 throw Error.tooLong(rawValue.count)
             }
-            guard !rawValue.contains(where: { $0.underlying > 0x7F }) else {
+            guard !rawValue.contains(where: { $0.bitPattern > 0x7F }) else {
                 throw Error.nonASCII
             }
             guard rawValue.last != Byte(0x2E) else {
@@ -79,7 +79,7 @@ extension RFC_6066 {
         /// - Parameter string: The hostname (e.g. `"example.com"`).
         /// - Throws: ``Error`` if validation fails.
         public init(_ string: some StringProtocol) throws(Error) {
-            try self.init(rawValue: [Byte](Array(string.utf8)))
+            try self.init(rawValue: string.utf8.map(Byte.init(bitPattern:)))
         }
     }
 }
@@ -97,7 +97,7 @@ extension RFC_6066.HostName: Binary.Serializable {
     }
 
     /// Parses an `opaque HostName<1..2^16-1>` vector.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
         let raw: [Byte]
@@ -119,7 +119,6 @@ extension RFC_6066.HostName: Binary.Serializable {
 extension RFC_6066.HostName: CustomStringConvertible {
     public var description: String {
         // Stdlib idiom: String(decoding:as:UTF8.self) takes Sequence<UInt8>;
-        // bridge via .underlying for the byte-domain rawValue.
-        String(decoding: rawValue.underlying, as: UTF8.self)
+        String(decoding: rawValue, as: UTF8.self)
     }
 }

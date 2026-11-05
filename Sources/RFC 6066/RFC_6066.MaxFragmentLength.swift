@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 4: Maximum Fragment Length Negotiation
 
-public import Binary_Serializable_Primitives
+public import Binary
 public import RFC_8446
 
 extension RFC_6066 {
@@ -79,7 +79,9 @@ extension RFC_6066.MaxFragmentLength {
 
     /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
     public var extensionData: RFC_8446.Extension.Data {
-        RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+        // Cannot throw: this payload's fixed-size body is under the envelope's 65535-byte limit.
+        // swiftlint:disable:next force_try
+        try! RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
     }
 }
 
@@ -95,7 +97,7 @@ extension RFC_6066.MaxFragmentLength: Binary.Serializable {
     }
 
     /// Parses a `max_fragment_length` `extension_data` body.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
         let rawValue: UInt8

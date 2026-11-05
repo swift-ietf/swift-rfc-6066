@@ -15,7 +15,7 @@
 //
 // TLS presentation language: append helpers
 
-internal import Binary_Serializable_Primitives
+internal import Binary
 
 extension RFC_6066.Wire {
     /// Appends a big-endian `uint24` (0...2^24-1). `BinaryInteger` has no

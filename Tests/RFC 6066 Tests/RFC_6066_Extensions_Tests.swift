@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import Binary_Serializable_Primitives
+import Binary
 import RFC_8446
 import Testing
 
@@ -61,7 +61,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Serializes to a single byte`() {
-            let expected: [Byte] = [0x02]
+            let expected: [Byte] = [Byte(0x02)]
             #expect(RFC_6066.MaxFragmentLength.bytes1024.bytes == expected)
         }
 
@@ -74,7 +74,7 @@ struct RFC_6066_Extensions_Tests {
         @Test
         func `Rejects an illegal code point`() {
             // RFC 6066 §4 allows only 1...4; anything else is illegal_parameter.
-            let bytes: [Byte] = [0x05]
+            let bytes: [Byte] = [Byte(0x05)]
             #expect(throws: RFC_6066.MaxFragmentLength.Error.unknownLength(5)) {
                 try RFC_6066.MaxFragmentLength(binary: bytes)
             }
@@ -82,7 +82,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Rejects trailing bytes`() {
-            let bytes: [Byte] = [0x02, 0x02]
+            let bytes: [Byte] = [Byte(0x02), Byte(0x02)]
             #expect(throws: RFC_6066.MaxFragmentLength.Error.trailingData(1)) {
                 try RFC_6066.MaxFragmentLength(binary: bytes)
             }
@@ -92,20 +92,20 @@ struct RFC_6066_Extensions_Tests {
     @Suite("status_request")
     struct StatusRequestTests {
         @Test
-        func `Empty OCSP request serializes byte-for-byte`() {
+        func `Empty OCSP request serializes byte-for-byte`() throws {
             // status_type (ocsp=1) | responder_id_list length (0) | request_extensions length (0)
             let request = RFC_6066.CertificateStatusRequest()
-            let expected: [Byte] = [0x01, 0x00, 0x00, 0x00, 0x00]
+            let expected: [Byte] = [Byte(0x01), Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x00)]
 
             #expect(request.bytes == expected)
             #expect(request.statusType == .ocsp)
-            #expect(request.extensionData.type == .statusRequest)
+            #expect(try request.extensionData.type == .statusRequest)
         }
 
         @Test
         func `Populated OCSP request serializes byte-for-byte`() {
-            let responderID: [Byte] = [0xAA, 0xBB]
-            let requestExtensions: [Byte] = [0xCC]
+            let responderID: [Byte] = [Byte(0xAA), Byte(0xBB)]
+            let requestExtensions: [Byte] = [Byte(0xCC)]
             let request = RFC_6066.CertificateStatusRequest(
                 request: RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
                     responderIDList: [responderID],
@@ -114,7 +114,7 @@ struct RFC_6066_Extensions_Tests {
             )
 
             // status_type | responder_id_list<4> { ResponderID<2> AA BB } | Extensions<1> CC
-            let expected: [Byte] = [0x01, 0x00, 0x04, 0x00, 0x02, 0xAA, 0xBB, 0x00, 0x01, 0xCC]
+            let expected: [Byte] = [Byte(0x01), Byte(0x00), Byte(0x04), Byte(0x00), Byte(0x02), Byte(0xAA), Byte(0xBB), Byte(0x00), Byte(0x01), Byte(0xCC)]
             #expect(request.bytes == expected)
         }
 
@@ -122,8 +122,8 @@ struct RFC_6066_Extensions_Tests {
         func `Round-trips`() throws {
             let request = RFC_6066.CertificateStatusRequest(
                 request: RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
-                    responderIDList: [[0xAA, 0xBB], [0x01]],
-                    requestExtensions: [0xCC, 0xDD]
+                    responderIDList: [[Byte(0xAA), Byte(0xBB)], [Byte(0x01)]],
+                    requestExtensions: [Byte(0xCC), Byte(0xDD)]
                 )
             )
             #expect(try RFC_6066.CertificateStatusRequest(binary: request.bytes) == request)
@@ -131,7 +131,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Rejects an unsupported status_type`() {
-            let bytes: [Byte] = [0x02, 0x00, 0x00, 0x00, 0x00]
+            let bytes: [Byte] = [Byte(0x02), Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x00)]
             #expect(throws: RFC_6066.CertificateStatusRequest.Error.unsupportedStatusType(2)) {
                 try RFC_6066.CertificateStatusRequest(binary: bytes)
             }
@@ -139,7 +139,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Rejects a truncated request`() {
-            let bytes: [Byte] = [0x01, 0x00]
+            let bytes: [Byte] = [Byte(0x01), Byte(0x00)]
             #expect(throws: RFC_6066.CertificateStatusRequest.Error.truncated) {
                 try RFC_6066.CertificateStatusRequest(binary: bytes)
             }
@@ -150,17 +150,17 @@ struct RFC_6066_Extensions_Tests {
     struct CertificateStatusTests {
         @Test
         func `Serializes status_type and a uint24-prefixed OCSP response`() throws {
-            let response: [Byte] = [0xDE, 0xAD, 0xBE, 0xEF]
+            let response: [Byte] = [Byte(0xDE), Byte(0xAD), Byte(0xBE), Byte(0xEF)]
             let status = try RFC_6066.CertificateStatus(response: response)
 
-            let expected: [Byte] = [0x01, 0x00, 0x00, 0x04, 0xDE, 0xAD, 0xBE, 0xEF]
+            let expected: [Byte] = [Byte(0x01), Byte(0x00), Byte(0x00), Byte(0x04), Byte(0xDE), Byte(0xAD), Byte(0xBE), Byte(0xEF)]
             #expect(status.bytes == expected)
             #expect(status.statusType == .ocsp)
         }
 
         @Test
         func `Round-trips`() throws {
-            let response: [Byte] = [0xDE, 0xAD, 0xBE, 0xEF]
+            let response: [Byte] = [Byte(0xDE), Byte(0xAD), Byte(0xBE), Byte(0xEF)]
             let status = try RFC_6066.CertificateStatus(response: response)
             #expect(try RFC_6066.CertificateStatus(binary: status.bytes) == status)
         }
@@ -169,8 +169,8 @@ struct RFC_6066_Extensions_Tests {
         func `Wraps into the TLS 1.3 status_request extension`() throws {
             // RFC 8446 §4.4.2.1 carries this structure as the CertificateEntry's
             // status_request extension_data.
-            let status = try RFC_6066.CertificateStatus(response: [0xDE, 0xAD])
-            let ext = status.extensionData
+            let status = try RFC_6066.CertificateStatus(response: [Byte(0xDE), Byte(0xAD)])
+            let ext = try status.extensionData
 
             #expect(ext.type == .statusRequest)
             #expect(ext.data == status.bytes)
@@ -186,7 +186,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Rejects an unsupported status_type`() {
-            let bytes: [Byte] = [0x02, 0x00, 0x00, 0x01, 0xFF]
+            let bytes: [Byte] = [Byte(0x02), Byte(0x00), Byte(0x00), Byte(0x01), Byte(0xFF)]
             #expect(throws: RFC_6066.CertificateStatus.Error.unsupportedStatusType(2)) {
                 try RFC_6066.CertificateStatus(binary: bytes)
             }
@@ -211,7 +211,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Rejects a non-empty body`() {
-            let bytes: [Byte] = [0x00]
+            let bytes: [Byte] = [Byte(0x00)]
             #expect(throws: RFC_6066.TruncatedHMAC.Error.trailingData(1)) {
                 try RFC_6066.TruncatedHMAC(binary: bytes)
             }
@@ -236,7 +236,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `Rejects a non-empty body`() {
-            let bytes: [Byte] = [0x00]
+            let bytes: [Byte] = [Byte(0x00)]
             #expect(throws: RFC_6066.ClientCertificateURL.Error.trailingData(1)) {
                 try RFC_6066.ClientCertificateURL(binary: bytes)
             }
@@ -246,7 +246,7 @@ struct RFC_6066_Extensions_Tests {
     @Suite("CertificateURL")
     struct CertificateURLTests {
         /// "http://x" — the URL used by the byte-exact vector.
-        static let url: [Byte] = [0x68, 0x74, 0x74, 0x70, 0x3A, 0x2F, 0x2F, 0x78]
+        static let url: [Byte] = [Byte(0x68), Byte(0x74), Byte(0x74), Byte(0x70), Byte(0x3A), Byte(0x2F), Byte(0x2F), Byte(0x78)]
 
         /// A 20-byte SHA-1 digest stand-in.
         static let hash: [Byte] = Array(repeating: Byte(0xCD), count: 20)
@@ -264,7 +264,7 @@ struct RFC_6066_Extensions_Tests {
 
             // type (0) | list length (31) | url<8> | padding (0x01) | SHA1Hash[20]
             let expected: [Byte] =
-                [0x00, 0x00, 0x1F, 0x00, 0x08] + Self.url + [0x01] + Self.hash
+                [Byte(0x00), Byte(0x00), Byte(0x1F), Byte(0x00), Byte(0x08)] + Self.url + [Byte(0x01)] + Self.hash
             #expect(message.bytes == expected)
         }
 
@@ -289,7 +289,7 @@ struct RFC_6066_Extensions_Tests {
         func `Rejects a padding byte other than 0x01`() {
             // RFC 6066 §5: "The 'padding' byte MUST be 0x01."
             let bytes: [Byte] =
-                [0x00, 0x00, 0x1F, 0x00, 0x08] + Self.url + [0x00] + Self.hash
+                [Byte(0x00), Byte(0x00), Byte(0x1F), Byte(0x00), Byte(0x08)] + Self.url + [Byte(0x00)] + Self.hash
             #expect(throws: RFC_6066.CertificateURL.Error.invalidPadding(0)) {
                 try RFC_6066.CertificateURL(binary: bytes)
             }
@@ -297,7 +297,7 @@ struct RFC_6066_Extensions_Tests {
 
         @Test
         func `SHA1Hash requires exactly 20 bytes`() {
-            let short: [Byte] = [0x01, 0x02, 0x03]
+            let short: [Byte] = [Byte(0x01), Byte(0x02), Byte(0x03)]
             #expect(throws: RFC_6066.SHA1Hash.Error.invalidLength(3)) {
                 try RFC_6066.SHA1Hash(rawValue: short)
             }
@@ -307,23 +307,23 @@ struct RFC_6066_Extensions_Tests {
     @Suite("trusted_ca_keys")
     struct TrustedAuthoritiesTests {
         @Test
-        func `Empty list serializes to a zero-length vector`() {
+        func `Empty list serializes to a zero-length vector`() throws {
             let value = RFC_6066.TrustedAuthorities()
-            let expected: [Byte] = [0x00, 0x00]
+            let expected: [Byte] = [Byte(0x00), Byte(0x00)]
 
             #expect(value.bytes == expected)
-            #expect(value.extensionData.type == .trustedCAKeys)
+            #expect(try value.extensionData.type == .trustedCAKeys)
         }
 
         @Test
         func `Serializes each identifier variant byte-for-byte`() throws {
-            let distinguishedName: [Byte] = [0x30, 0x00]
+            let distinguishedName: [Byte] = [Byte(0x30), Byte(0x00)]
             let value = RFC_6066.TrustedAuthorities(
                 trustedAuthoritiesList: [.preAgreed, .x509Name(distinguishedName)]
             )
 
             // list length (6) | pre_agreed(0) | x509_name(2) | DN length (2) | 30 00
-            let expected: [Byte] = [0x00, 0x06, 0x00, 0x02, 0x00, 0x02, 0x30, 0x00]
+            let expected: [Byte] = [Byte(0x00), Byte(0x06), Byte(0x00), Byte(0x02), Byte(0x00), Byte(0x02), Byte(0x30), Byte(0x00)]
             #expect(value.bytes == expected)
         }
 
@@ -334,7 +334,7 @@ struct RFC_6066_Extensions_Tests {
                 trustedAuthoritiesList: [
                     .preAgreed,
                     .keySHA1Hash(hash),
-                    .x509Name([0x30, 0x03, 0x02, 0x01, 0x00]),
+                    .x509Name([Byte(0x30), Byte(0x03), Byte(0x02), Byte(0x01), Byte(0x00)]),
                     .certSHA1Hash(hash),
                 ]
             )
@@ -349,7 +349,7 @@ struct RFC_6066_Extensions_Tests {
         @Test
         func `Rejects an unknown identifier type`() {
             // list length (1) | identifier_type (4 — undefined)
-            let bytes: [Byte] = [0x00, 0x01, 0x04]
+            let bytes: [Byte] = [Byte(0x00), Byte(0x01), Byte(0x04)]
             #expect(throws: RFC_6066.TrustedAuthorities.Error.unknownIdentifierType(4)) {
                 try RFC_6066.TrustedAuthorities(binary: bytes)
             }
@@ -358,7 +358,7 @@ struct RFC_6066_Extensions_Tests {
         @Test
         func `Rejects a truncated hash`() {
             // list length (3) | key_sha1_hash(1) | only 2 of the 20 hash bytes
-            let bytes: [Byte] = [0x00, 0x03, 0x01, 0xAB, 0xCD]
+            let bytes: [Byte] = [Byte(0x00), Byte(0x03), Byte(0x01), Byte(0xAB), Byte(0xCD)]
             #expect(throws: RFC_6066.TrustedAuthorities.Error.truncated) {
                 try RFC_6066.TrustedAuthorities(binary: bytes)
             }

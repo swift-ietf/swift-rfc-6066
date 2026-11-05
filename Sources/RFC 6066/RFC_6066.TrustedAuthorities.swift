@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 6: Trusted CA Indication
 
-public import Binary_Serializable_Primitives
+public import Binary
 public import RFC_8446
 
 extension RFC_6066 {
@@ -58,8 +58,13 @@ extension RFC_6066 {
         public static let extensionType: RFC_8446.Extension.ExtensionType = .trustedCAKeys
 
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
+        ///
+        /// - Throws: ``RFC_8446/Extension/Data/Error`` if the body exceeds the
+        ///   envelope's 65535-byte limit.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            get throws(RFC_8446.Extension.Data.Error) {
+                try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            }
         }
     }
 }
@@ -79,7 +84,7 @@ extension RFC_6066.TrustedAuthorities: Binary.Serializable {
     }
 
     /// Parses a `trusted_ca_keys` `extension_data` body (the client form).
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         var reader = RFC_6066.Wire.Reader(Array(bytes))
         let block: [Byte]

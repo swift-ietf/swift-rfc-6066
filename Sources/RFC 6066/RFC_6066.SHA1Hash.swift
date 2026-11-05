@@ -15,7 +15,7 @@
 //
 // RFC 6066 Sections 5 and 6: SHA1Hash
 
-public import Binary_Serializable_Primitives
+public import Binary
 
 extension RFC_6066 {
     /// `SHA1Hash` — a fixed-width 20-byte SHA-1 digest.
@@ -71,7 +71,7 @@ extension RFC_6066.SHA1Hash: Binary.Serializable {
     }
 
     /// Parses exactly 20 digest bytes.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         try self.init(rawValue: Array(bytes))
     }

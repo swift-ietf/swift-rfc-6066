@@ -15,7 +15,7 @@
 //
 // RFC 6066 Section 7: Truncated HMAC
 
-public import Binary_Serializable_Primitives
+public import Binary
 public import RFC_8446
 
 extension RFC_6066 {
@@ -41,7 +41,9 @@ extension RFC_6066 {
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
         /// with an empty `extension_data`.
         public var extensionData: RFC_8446.Extension.Data {
-            RFC_8446.Extension.Data(type: Self.extensionType, data: [])
+            // Cannot throw: this payload's fixed-size body is under the envelope's 65535-byte limit.
+            // swiftlint:disable:next force_try
+            try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
         }
     }
 }
@@ -58,7 +60,7 @@ extension RFC_6066.TruncatedHMAC: Binary.Serializable {
     }
 
     /// Parses a `truncated_hmac` `extension_data` body, which must be empty.
-    public init<Bytes: Collection>(binary bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(binary bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         guard bytes.isEmpty else {
             throw Error.trailingData(bytes.count)
