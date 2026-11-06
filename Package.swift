@@ -6,15 +6,6 @@ extension String {
     static let rfc6066: Self = "RFC 6066"
 }
 
-extension Target.Dependency {
-    static var rfc6066: Self { .target(name: .rfc6066) }
-    static var rfc8446: Self { .product(name: "RFC 8446", package: "swift-rfc-8446") }
-    static var standards: Self { .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions") }
-    static var incits41986: Self { .product(name: "ASCII", package: "swift-ascii") }
-    static var binary: Self { .product(name: "Binary", package: "swift-binary") }
-    static var bytePrimitivesSLI: Self { .product(name: "Byte", package: "swift-byte") }
-}
-
 let package = Package(
     name: "swift-rfc-6066",
     platforms: [
@@ -39,23 +30,23 @@ let package = Package(
         .target(
             name: "RFC 6066",
             dependencies: [
-                .rfc8446,
-                .standards,
-                .incits41986,
-                .binary,
+                .product(name: "RFC 8446", package: "swift-rfc-8446"),
+                .product(name: "Standard Library Extensions", package: "swift-standard-library-extensions"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Binary", package: "swift-binary"),
             ]
         ),
         .target(
             name: "RFC 6066 Standard Library Integration",
             dependencies: [
-                .rfc6066,
-                .bytePrimitivesSLI,
+                .target(name: .rfc6066),
+                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
         .testTarget(
             name: "RFC 6066 Tests",
             dependencies: [
-                .binary,
+                .product(name: "Binary", package: "swift-binary"),
                 "RFC 6066",
             ]
         ),
