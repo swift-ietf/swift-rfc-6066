@@ -84,7 +84,8 @@ extension RFC_6066.Wire.Reader {
     /// Reads one ``RFC_6066/CertificateStatusRequest/OCSPStatusRequest`` from the
     /// cursor (the body after the `status_type` discriminator).
     mutating func ocspStatusRequest() throws(RFC_6066.Wire.Error)
-    -> RFC_6066.CertificateStatusRequest.OCSPStatusRequest {
+        -> RFC_6066.CertificateStatusRequest.OCSPStatusRequest
+    {
         let block = try vector16()
         var sub = RFC_6066.Wire.Reader(block)
         var responderIDList: [[Byte]] = []

@@ -93,7 +93,8 @@ extension RFC_6066.Wire.Reader {
     /// Padding validation is the caller's job — the reader deals only in
     /// presentation-language forms.
     mutating func urlAndHashFields() throws(RFC_6066.Wire.Error)
-    -> (url: [Byte], padding: UInt8, sha1Hash: [Byte]) {
+        -> (url: [Byte], padding: UInt8, sha1Hash: [Byte])
+    {
         let url = try vector16()
         let padding = try byte()
         let sha1Hash = try take(20)

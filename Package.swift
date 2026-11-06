@@ -22,7 +22,7 @@ let package = Package(
         .iOS(.v27),
         .tvOS(.v27),
         .watchOS(.v27),
-        .visionOS(.v27)
+        .visionOS(.v27),
     ],
     products: [
         .library(name: "RFC 6066", targets: ["RFC 6066"]),
@@ -33,7 +33,7 @@ let package = Package(
         .package(url: "https://github.com/swift-atoms/swift-standard-library-extensions.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-binary.git", branch: "main", traits: ["Serializer"]),
-        .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main")
+        .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
     ],
     targets: [
         .target(
@@ -42,7 +42,7 @@ let package = Package(
                 .rfc8446,
                 .standards,
                 .incits41986,
-                .binary
+                .binary,
             ]
         ),
         .target(

@@ -80,6 +80,7 @@ extension RFC_6066.MaxFragmentLength {
     /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
     public var extensionData: RFC_8446.Extension.Data {
         // Cannot throw: this payload's fixed-size body is under the envelope's 65535-byte limit.
+        // swift-format-ignore: NeverUseForceTry
         // swiftlint:disable:next force_try
         try! RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
     }
