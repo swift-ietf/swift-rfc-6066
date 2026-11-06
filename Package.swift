@@ -2,10 +2,6 @@
 
 import PackageDescription
 
-extension String {
-    static let rfc6066: Self = "RFC 6066"
-}
-
 let package = Package(
     name: "swift-rfc-6066",
     platforms: [
@@ -39,7 +35,7 @@ let package = Package(
         .target(
             name: "RFC 6066 Standard Library Integration",
             dependencies: [
-                .target(name: .rfc6066),
+                .target(name: "RFC 6066"),
                 .product(name: "Byte", package: "swift-byte"),
             ]
         ),
@@ -60,10 +56,6 @@ let package = Package(
     ],
     swiftLanguageModes: [.v6]
 )
-
-extension String {
-    var tests: Self { self + " Tests" }
-}
 
 for target in package.targets where ![.system, .binary, .plugin, .macro].contains(target.type) {
     let ecosystem: [SwiftSetting] = [
