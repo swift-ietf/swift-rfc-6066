@@ -16,11 +16,11 @@ import Testing
 
 @testable import RFC_6066
 
-@Suite("RFC 6066 extension payloads")
-struct RFC_6066_Extensions_Tests {
+@Suite
+struct `RFC 6066 extension payloads` {
 
-    @Suite("ExtensionType registry")
-    struct ExtensionTypeTests {
+    @Suite
+    struct `ExtensionType registry` {
         @Test
         func `RFC 6066 code points`() {
             // The three RFC 6066 code points TLS 1.3 does not carry are declared
@@ -44,8 +44,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("max_fragment_length")
-    struct MaxFragmentLengthTests {
+    @Suite
+    struct `max_fragment_length` {
         @Test
         func `Code points map to fragment lengths`() {
             #expect(RFC_6066.MaxFragmentLength.bytes512.rawValue == 1)
@@ -89,8 +89,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("status_request")
-    struct StatusRequestTests {
+    @Suite
+    struct `status_request` {
         @Test
         func `Empty OCSP request serializes byte-for-byte`() throws {
             // status_type (ocsp=1) | responder_id_list length (0) | request_extensions length (0)
@@ -146,8 +146,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("CertificateStatus")
-    struct CertificateStatusTests {
+    @Suite
+    struct `CertificateStatus` {
         @Test
         func `Serializes status_type and a uint24-prefixed OCSP response`() throws {
             let response: [Byte] = [Byte(0xDE), Byte(0xAD), Byte(0xBE), Byte(0xEF)]
@@ -193,8 +193,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("truncated_hmac")
-    struct TruncatedHMACTests {
+    @Suite
+    struct `truncated_hmac` {
         @Test
         func `Serializes to an empty body`() {
             let value = RFC_6066.TruncatedHMAC()
@@ -218,8 +218,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("client_certificate_url")
-    struct ClientCertificateURLTests {
+    @Suite
+    struct `client_certificate_url` {
         @Test
         func `Serializes to an empty body`() {
             let value = RFC_6066.ClientCertificateURL()
@@ -243,8 +243,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("CertificateURL")
-    struct CertificateURLTests {
+    @Suite
+    struct `CertificateURL` {
         /// "http://x" — the URL used by the byte-exact vector.
         static let url: [Byte] = [Byte(0x68), Byte(0x74), Byte(0x74), Byte(0x70), Byte(0x3A), Byte(0x2F), Byte(0x2F), Byte(0x78)]
 
@@ -304,8 +304,8 @@ struct RFC_6066_Extensions_Tests {
         }
     }
 
-    @Suite("trusted_ca_keys")
-    struct TrustedAuthoritiesTests {
+    @Suite
+    struct `trusted_ca_keys` {
         @Test
         func `Empty list serializes to a zero-length vector`() throws {
             let value = RFC_6066.TrustedAuthorities()

@@ -14,8 +14,8 @@ import RFC_6066
 import RFC_6066_Standard_Library_Integration
 import Testing
 
-@Suite("RFC 6066 UInt8 forwarders")
-struct RFC_6066_UInt8_Tests {
+@Suite
+struct `RFC 6066 UInt8 forwarders` {
 
     @Test
     func `HostName forwarder constructs from [UInt8]`() throws {
