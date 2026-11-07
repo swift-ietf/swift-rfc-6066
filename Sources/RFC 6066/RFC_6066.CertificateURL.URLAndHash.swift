@@ -25,9 +25,6 @@ extension RFC_6066.CertificateURL {
         /// The SHA-1 hash of the DER object at ``url``.
         public let sha1Hash: RFC_6066.SHA1Hash
 
-        /// The mandatory `padding` byte value (0x01).
-        public static let padding: Byte = Byte(0x01)
-
         /// Creates a URL/hash pair WITHOUT validation.
         init(__unchecked: Void, url: [Byte], sha1Hash: RFC_6066.SHA1Hash) {
             self.url = url
@@ -49,8 +46,12 @@ extension RFC_6066.CertificateURL {
             }
             self.init(__unchecked: (), url: url, sha1Hash: sha1Hash)
         }
-
     }
+}
+
+extension RFC_6066.CertificateURL.URLAndHash {
+    /// The mandatory `padding` byte value (0x01).
+    public static let padding: Byte = Byte(0x01)
 }
 
 extension RFC_6066.CertificateURL.URLAndHash: Binary.Serializable {

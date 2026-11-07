@@ -17,17 +17,19 @@ extension RFC_6066 {
     public struct ClientCertificateURL: Sendable, Hashable {
         /// Creates the empty `client_certificate_url` body.
         public init() {}
+    }
+}
 
-        /// The extension type for this payload (`client_certificate_url`).
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .clientCertificateURL
+extension RFC_6066.ClientCertificateURL {
+    /// The extension type for this payload (`client_certificate_url`).
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .clientCertificateURL
 
-        /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
-        /// with an empty `extension_data`.
-        public var extensionData: RFC_8446.Extension.Data {
-            // swift-format-ignore: NeverUseForceTry
-            // swiftlint:disable:next force_try
-            try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
-        }
+    /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
+    /// with an empty `extension_data`.
+    public var extensionData: RFC_8446.Extension.Data {
+        // swift-format-ignore: NeverUseForceTry
+        // swiftlint:disable:next force_try
+        try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
     }
 }
 

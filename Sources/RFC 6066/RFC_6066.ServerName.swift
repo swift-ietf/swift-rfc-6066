@@ -28,10 +28,12 @@ extension RFC_6066 {
         public init(hostName: HostName) {
             self.hostName = hostName
         }
-
-        /// The wire discriminator for this entry — always `host_name(0)`.
-        public var nameType: NameType { .hostName }
     }
+}
+
+extension RFC_6066.ServerName {
+    /// The wire discriminator for this entry — always `host_name(0)`.
+    public var nameType: NameType { .hostName }
 }
 
 extension RFC_6066.ServerName: Binary.Serializable {

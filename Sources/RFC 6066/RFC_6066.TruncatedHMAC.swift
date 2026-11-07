@@ -17,17 +17,19 @@ extension RFC_6066 {
     public struct TruncatedHMAC: Sendable, Hashable {
         /// Creates the empty `truncated_hmac` body.
         public init() {}
+    }
+}
 
-        /// The extension type for this payload (`truncated_hmac`).
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .truncatedHMAC
+extension RFC_6066.TruncatedHMAC {
+    /// The extension type for this payload (`truncated_hmac`).
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .truncatedHMAC
 
-        /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
-        /// with an empty `extension_data`.
-        public var extensionData: RFC_8446.Extension.Data {
-            // swift-format-ignore: NeverUseForceTry
-            // swiftlint:disable:next force_try
-            try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
-        }
+    /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
+    /// with an empty `extension_data`.
+    public var extensionData: RFC_8446.Extension.Data {
+        // swift-format-ignore: NeverUseForceTry
+        // swiftlint:disable:next force_try
+        try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
     }
 }
 

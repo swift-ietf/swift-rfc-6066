@@ -25,17 +25,19 @@ extension RFC_6066.ServerNameList {
     public struct Acknowledgement: Sendable, Hashable {
         /// Creates the empty acknowledgement body.
         public init() {}
+    }
+}
 
-        /// The extension type for this payload (`server_name`).
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .serverName
+extension RFC_6066.ServerNameList.Acknowledgement {
+    /// The extension type for this payload (`server_name`).
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .serverName
 
-        /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
-        /// with an empty `extension_data`.
-        public var extensionData: RFC_8446.Extension.Data {
-            // swift-format-ignore: NeverUseForceTry
-            // swiftlint:disable:next force_try
-            try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
-        }
+    /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
+    /// with an empty `extension_data`.
+    public var extensionData: RFC_8446.Extension.Data {
+        // swift-format-ignore: NeverUseForceTry
+        // swiftlint:disable:next force_try
+        try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
     }
 }
 
