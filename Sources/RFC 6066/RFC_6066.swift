@@ -1,27 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.swift
-// swift-rfc-6066
-//
-// RFC 6066: Transport Layer Security (TLS) Extensions: Extension Definitions
-//           (January 2011) — obsoletes RFC 4366
-// https://www.rfc-editor.org/rfc/rfc6066.html
-//
-// This package implements the RFC 6066 extension payloads that layer above the
-// generic `RFC_8446.Extension.Data` envelope: server_name (SNI),
-// max_fragment_length, client_certificate_url, trusted_ca_keys, truncated_hmac,
-// and status_request (OCSP).
-
 /// RFC 6066: TLS Extension Definitions
 ///
 /// This namespace contains the typed `extension_data` payloads defined by

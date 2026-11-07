@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.MaxFragmentLength.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 4: Maximum Fragment Length Negotiation
-
 public import Binary
 public import RFC_8446
 
@@ -61,8 +44,6 @@ extension RFC_6066 {
     }
 }
 
-// MARK: - Fragment Length
-
 extension RFC_6066.MaxFragmentLength {
     /// The negotiated maximum fragment length in bytes (512, 1024, 2048, or 4096).
     public var fragmentLength: Int {
@@ -79,14 +60,11 @@ extension RFC_6066.MaxFragmentLength {
 
     /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
     public var extensionData: RFC_8446.Extension.Data {
-        // Cannot throw: this payload's fixed-size body is under the envelope's 65535-byte limit.
         // swift-format-ignore: NeverUseForceTry
         // swiftlint:disable:next force_try
         try! RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.MaxFragmentLength: Binary.Serializable {
     /// Serializes the single-byte `MaxFragmentLength` code point.
@@ -117,8 +95,6 @@ extension RFC_6066.MaxFragmentLength: Binary.Serializable {
         self = value
     }
 }
-
-// MARK: - CustomStringConvertible
 
 extension RFC_6066.MaxFragmentLength: CustomStringConvertible {
     public var description: String {

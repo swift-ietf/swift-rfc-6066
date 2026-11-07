@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.SHA1Hash.swift
-// swift-rfc-6066
-//
-// RFC 6066 Sections 5 and 6: SHA1Hash
-
 public import Binary
 
 extension RFC_6066 {
@@ -53,12 +36,8 @@ extension RFC_6066 {
             self.init(__unchecked: (), rawValue: rawValue)
         }
 
-        // Stdlib-interop forwarder `init(rawValue: [UInt8])` moved to
-        // `RFC 6066 Standard Library Integration` target per [API-BYTE-007].
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.SHA1Hash: Binary.Serializable {
     /// Serializes the 20 digest bytes — no length prefix (`SHA1Hash[20]` is a

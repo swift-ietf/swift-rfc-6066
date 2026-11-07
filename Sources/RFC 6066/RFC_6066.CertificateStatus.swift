@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.CertificateStatus.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 8: Certificate Status Request (server response)
-
 public import Binary
 public import RFC_8446
 
@@ -71,9 +54,6 @@ extension RFC_6066 {
             self.init(__unchecked: (), response: response)
         }
 
-        // Stdlib-interop forwarder `init(response: [UInt8])` moved to
-        // `RFC 6066 Standard Library Integration` target per [API-BYTE-007].
-
         /// The wire discriminator for this response — always `ocsp(1)`.
         public var statusType: CertificateStatusType { .ocsp }
 
@@ -89,8 +69,6 @@ extension RFC_6066 {
         }
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.CertificateStatus: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(

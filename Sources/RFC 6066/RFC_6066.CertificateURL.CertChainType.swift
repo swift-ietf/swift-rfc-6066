@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.CertificateURL.CertChainType.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 5: Client Certificate URLs
-
 extension RFC_6066.CertificateURL {
     /// `CertChainType`, how the certificates at the URLs are packaged.
     ///
@@ -46,8 +29,6 @@ extension RFC_6066.CertificateURL {
         public static let pkipath = Self(__unchecked: (), rawValue: 1)
     }
 }
-
-// MARK: - CustomStringConvertible
 
 extension RFC_6066.CertificateURL.CertChainType: CustomStringConvertible {
     public var description: String {

@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.HostName.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 3: Server Name Indication
-
 public import Binary
 
 extension RFC_6066 {
@@ -71,9 +54,6 @@ extension RFC_6066 {
             self.init(__unchecked: (), rawValue: rawValue)
         }
 
-        // Stdlib-interop forwarder `init(rawValue: [UInt8])` moved to
-        // `RFC 6066 Standard Library Integration` target per [API-BYTE-007].
-
         /// Creates a hostname from a string.
         ///
         /// - Parameter string: The hostname (e.g. `"example.com"`).
@@ -83,8 +63,6 @@ extension RFC_6066 {
         }
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.HostName: Binary.Serializable {
     /// Serializes the hostname as the `opaque HostName<1..2^16-1>` vector
@@ -114,11 +92,8 @@ extension RFC_6066.HostName: Binary.Serializable {
     }
 }
 
-// MARK: - CustomStringConvertible
-
 extension RFC_6066.HostName: CustomStringConvertible {
     public var description: String {
-        // Stdlib idiom: String(decoding:as:UTF8.self) takes Sequence<UInt8>;
         String(decoding: rawValue, as: UTF8.self)
     }
 }

@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.CertificateStatusRequest.OCSPStatusRequest.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 8: Certificate Status Request
-
 public import Binary
 
 extension RFC_6066.CertificateStatusRequest {
@@ -57,12 +40,8 @@ extension RFC_6066.CertificateStatusRequest {
             self.requestExtensions = requestExtensions
         }
 
-        // Stdlib-interop forwarder `init(responderIDList: [[UInt8]], requestExtensions: [UInt8])`
-        // moved to `RFC 6066 Standard Library Integration` target per [API-BYTE-007].
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.CertificateStatusRequest.OCSPStatusRequest: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -77,8 +56,6 @@ extension RFC_6066.CertificateStatusRequest.OCSPStatusRequest: Binary.Serializab
         RFC_6066.Wire.appendVector16(value.requestExtensions, into: &buffer)
     }
 }
-
-// MARK: - Wire Decoding
 
 extension RFC_6066.Wire.Reader {
     /// Reads one ``RFC_6066/CertificateStatusRequest/OCSPStatusRequest`` from the

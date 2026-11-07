@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.TrustedAuthority.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 6: Trusted CA Indication
-
 public import Binary
 
 extension RFC_6066 {
@@ -60,8 +43,6 @@ extension RFC_6066 {
     }
 }
 
-// MARK: - Identifier Type
-
 extension RFC_6066.TrustedAuthority {
     /// The wire discriminator for this authority.
     public var identifierType: IdentifierType {
@@ -74,8 +55,6 @@ extension RFC_6066.TrustedAuthority {
     }
 }
 
-// MARK: - Binary.Serializable
-
 extension RFC_6066.TrustedAuthority: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
@@ -84,7 +63,7 @@ extension RFC_6066.TrustedAuthority: Binary.Serializable {
         buffer.append(Byte(value.identifierType.rawValue))
         switch value {
         case .preAgreed:
-            break  // case pre_agreed: struct {} — no identifier bytes
+            break
         case .keySHA1Hash(let hash), .certSHA1Hash(let hash):
             RFC_6066.SHA1Hash.serialize(hash, into: &buffer)
         case .x509Name(let distinguishedName):

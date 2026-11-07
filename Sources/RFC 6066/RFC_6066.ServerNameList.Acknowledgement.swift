@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.ServerNameList.Acknowledgement.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 3: Server Name Indication (server response)
-
 public import Binary
 public import RFC_8446
 
@@ -49,7 +32,6 @@ extension RFC_6066.ServerNameList {
         /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope
         /// with an empty `extension_data`.
         public var extensionData: RFC_8446.Extension.Data {
-            // Cannot throw: this payload's fixed-size body is under the envelope's 65535-byte limit.
             // swift-format-ignore: NeverUseForceTry
             // swiftlint:disable:next force_try
             try! RFC_8446.Extension.Data(type: Self.extensionType, data: [])
@@ -57,15 +39,12 @@ extension RFC_6066.ServerNameList {
     }
 }
 
-// MARK: - Binary.Serializable
-
 extension RFC_6066.ServerNameList.Acknowledgement: Binary.Serializable {
     /// Appends nothing: the acknowledgement body is empty.
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
-        // The "extension_data" field of this extension SHALL be empty.
     }
 
     /// Parses the server's `server_name` response body, which must be empty.

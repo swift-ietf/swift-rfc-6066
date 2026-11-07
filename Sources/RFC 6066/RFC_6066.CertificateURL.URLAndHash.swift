@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.CertificateURL.URLAndHash.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 5: Client Certificate URLs
-
 public import Binary
 
 extension RFC_6066.CertificateURL {
@@ -67,12 +50,8 @@ extension RFC_6066.CertificateURL {
             self.init(__unchecked: (), url: url, sha1Hash: sha1Hash)
         }
 
-        // Stdlib-interop forwarder `init(url: [UInt8], sha1Hash:)` moved to
-        // `RFC 6066 Standard Library Integration` target per [API-BYTE-007].
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.CertificateURL.URLAndHash: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -84,8 +63,6 @@ extension RFC_6066.CertificateURL.URLAndHash: Binary.Serializable {
         RFC_6066.SHA1Hash.serialize(value.sha1Hash, into: &buffer)
     }
 }
-
-// MARK: - Wire Decoding
 
 extension RFC_6066.Wire.Reader {
     /// Reads the raw fields of one `URLAndHash` from the cursor.

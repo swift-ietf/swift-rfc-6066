@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.ServerName.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 3: Server Name Indication
-
 public import Binary
 
 extension RFC_6066 {
@@ -50,8 +33,6 @@ extension RFC_6066 {
         public var nameType: NameType { .hostName }
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.ServerName: Binary.Serializable {
     /// Serializes `name_type` (1 byte) followed by the `HostName` vector.
@@ -94,8 +75,6 @@ extension RFC_6066.ServerName: Binary.Serializable {
         self.init(hostName: hostName)
     }
 }
-
-// MARK: - Wire Decoding
 
 extension RFC_6066.Wire.Reader {
     /// Reads the raw fields of one `ServerName` from the cursor: the `name_type`

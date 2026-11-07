@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.CertificateURL.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 5: Client Certificate URLs
-
 public import Binary
 
 extension RFC_6066 {
@@ -73,8 +56,6 @@ extension RFC_6066 {
         }
     }
 }
-
-// MARK: - Binary.Serializable
 
 extension RFC_6066.CertificateURL: Binary.Serializable {
     public static func serialize<Buffer: RangeReplaceableCollection>(

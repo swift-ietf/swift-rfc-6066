@@ -1,20 +1,3 @@
-// ===----------------------------------------------------------------------===//
-//
-// Copyright (c) 2025 Coen ten Thije Boonkkamp
-// Licensed under Apache License v2.0
-//
-// See LICENSE.txt for license information
-// See CONTRIBUTORS.txt for the list of project contributors
-//
-// SPDX-License-Identifier: Apache-2.0
-//
-// ===----------------------------------------------------------------------===//
-
-// RFC_6066.TrustedAuthority.IdentifierType.swift
-// swift-rfc-6066
-//
-// RFC 6066 Section 6: Trusted CA Indication
-
 extension RFC_6066.TrustedAuthority {
     /// `IdentifierType`, the discriminator of the `TrustedAuthority` variant.
     ///
@@ -53,8 +36,6 @@ extension RFC_6066.TrustedAuthority {
         public static let certSHA1Hash = Self(__unchecked: (), rawValue: 3)
     }
 }
-
-// MARK: - CustomStringConvertible
 
 extension RFC_6066.TrustedAuthority.IdentifierType: CustomStringConvertible {
     public var description: String {
