@@ -15,16 +15,58 @@ import Testing
 
 @testable import RFC_6066
 
-@Suite
-struct `RFC 6066 server_name (SNI)` {
+enum `RFC_6066_ServerName Tests` {}
 
-    /// "example.com" — the running example for the byte-exact vectors below.
-    static let exampleCom: [Byte] = [Byte(0x65), Byte(0x78), Byte(0x61), Byte(0x6D), Byte(0x70), Byte(0x6C), Byte(0x65), Byte(0x2E), Byte(0x63), Byte(0x6F), Byte(0x6D)]
+extension `RFC_6066_ServerName Tests` {
+    @Suite
+    struct `RFC 6066 server_name (SNI)` {
 
-    /// The full `server_name` `extension_data` body for "example.com":
-    /// server_name_list length (14) | name_type (0) | host_name length (11) | "example.com"
-    static let body: [Byte] = [Byte(0x00), Byte(0x0E), Byte(0x00), Byte(0x00), Byte(0x0B)] + exampleCom
+        /// "example.com" — the running example for the byte-exact vectors below.
+        static let exampleCom: [Byte] = [Byte(0x65), Byte(0x78), Byte(0x61), Byte(0x6D), Byte(0x70), Byte(0x6C), Byte(0x65), Byte(0x2E), Byte(0x63), Byte(0x6F), Byte(0x6D)]
 
+        /// The full `server_name` `extension_data` body for "example.com":
+        /// server_name_list length (14) | name_type (0) | host_name length (11) | "example.com"
+        static let body: [Byte] = [Byte(0x00), Byte(0x0E), Byte(0x00), Byte(0x00), Byte(0x0B)] + exampleCom
+
+        @Suite("ServerNameList.Acknowledgement")
+        struct AcknowledgementTests {
+            @Test
+            func `Serializes to an empty body`() {
+                // RFC 6066 §3: "The 'extension_data' field of this extension SHALL be
+                // empty." — the server's response (EncryptedExtensions in TLS 1.3).
+                let ack = RFC_6066.ServerNameList.Acknowledgement()
+                #expect(ack.bytes.isEmpty)
+            }
+
+            @Test
+            func `Wraps into an empty RFC 8446 extension envelope`() {
+                let ext = RFC_6066.ServerNameList.Acknowledgement().extensionData
+                #expect(ext.type == .serverName)
+                #expect(ext.data.isEmpty)
+
+                // extension_type (0x0000) | extension_data length (0)
+                let expected: [Byte] = [Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x00)]
+                #expect(ext.bytes == expected)
+            }
+
+            @Test
+            func `Round-trips`() throws {
+                let ack = RFC_6066.ServerNameList.Acknowledgement()
+                #expect(try RFC_6066.ServerNameList.Acknowledgement(binary: ack.bytes) == ack)
+            }
+
+            @Test
+            func `Rejects a non-empty body`() {
+                let bytes: [Byte] = [Byte(0x00)]
+                #expect(throws: RFC_6066.ServerNameList.Acknowledgement.Error.trailingData(1)) {
+                    try RFC_6066.ServerNameList.Acknowledgement(binary: bytes)
+                }
+            }
+        }
+    }
+}
+
+extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
     @Suite
     struct `HostName` {
         @Test
@@ -195,42 +237,6 @@ struct `RFC 6066 server_name (SNI)` {
             let bytes: [Byte] = `RFC 6066 server_name (SNI)`.body + [Byte(0xFF)]
             #expect(throws: RFC_6066.ServerNameList.Error.trailingData(1)) {
                 try RFC_6066.ServerNameList(binary: bytes)
-            }
-        }
-    }
-
-    @Suite("ServerNameList.Acknowledgement")
-    struct AcknowledgementTests {
-        @Test
-        func `Serializes to an empty body`() {
-            // RFC 6066 §3: "The 'extension_data' field of this extension SHALL be
-            // empty." — the server's response (EncryptedExtensions in TLS 1.3).
-            let ack = RFC_6066.ServerNameList.Acknowledgement()
-            #expect(ack.bytes.isEmpty)
-        }
-
-        @Test
-        func `Wraps into an empty RFC 8446 extension envelope`() {
-            let ext = RFC_6066.ServerNameList.Acknowledgement().extensionData
-            #expect(ext.type == .serverName)
-            #expect(ext.data.isEmpty)
-
-            // extension_type (0x0000) | extension_data length (0)
-            let expected: [Byte] = [Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x00)]
-            #expect(ext.bytes == expected)
-        }
-
-        @Test
-        func `Round-trips`() throws {
-            let ack = RFC_6066.ServerNameList.Acknowledgement()
-            #expect(try RFC_6066.ServerNameList.Acknowledgement(binary: ack.bytes) == ack)
-        }
-
-        @Test
-        func `Rejects a non-empty body`() {
-            let bytes: [Byte] = [Byte(0x00)]
-            #expect(throws: RFC_6066.ServerNameList.Acknowledgement.Error.trailingData(1)) {
-                try RFC_6066.ServerNameList.Acknowledgement(binary: bytes)
             }
         }
     }
