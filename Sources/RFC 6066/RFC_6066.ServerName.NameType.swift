@@ -23,9 +23,6 @@ extension RFC_6066.ServerName {
         init(__unchecked: Void, rawValue: UInt8) {
             self.rawValue = rawValue
         }
-
-        /// host_name (0) — the name is a `HostName`.
-        public static let hostName = Self(__unchecked: (), rawValue: 0)
     }
 }
 
@@ -36,4 +33,10 @@ extension RFC_6066.ServerName.NameType: CustomStringConvertible {
         default: return "name_type(\(rawValue))"
         }
     }
+}
+
+extension RFC_6066.ServerName.NameType {
+
+    /// host_name (0) — the name is a `HostName`.
+    public static let hostName = Self(__unchecked: (), rawValue: 0)
 }

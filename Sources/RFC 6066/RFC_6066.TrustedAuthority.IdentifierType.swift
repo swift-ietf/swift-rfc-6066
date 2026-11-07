@@ -22,18 +22,6 @@ extension RFC_6066.TrustedAuthority {
         init(__unchecked: Void, rawValue: UInt8) {
             self.rawValue = rawValue
         }
-
-        /// pre_agreed (0) — no identifier is supplied; the CA is known out of band.
-        public static let preAgreed = Self(__unchecked: (), rawValue: 0)
-
-        /// key_sha1_hash (1) — SHA-1 hash of the CA's `SubjectPublicKeyInfo`.
-        public static let keySHA1Hash = Self(__unchecked: (), rawValue: 1)
-
-        /// x509_name (2) — the CA's DER-encoded X.509 `DistinguishedName`.
-        public static let x509Name = Self(__unchecked: (), rawValue: 2)
-
-        /// cert_sha1_hash (3) — SHA-1 hash of the CA's DER certificate.
-        public static let certSHA1Hash = Self(__unchecked: (), rawValue: 3)
     }
 }
 
@@ -47,4 +35,19 @@ extension RFC_6066.TrustedAuthority.IdentifierType: CustomStringConvertible {
         default: return "identifier_type(\(rawValue))"
         }
     }
+}
+
+extension RFC_6066.TrustedAuthority.IdentifierType {
+
+    /// pre_agreed (0) — no identifier is supplied; the CA is known out of band.
+    public static let preAgreed = Self(__unchecked: (), rawValue: 0)
+
+    /// key_sha1_hash (1) — SHA-1 hash of the CA's `SubjectPublicKeyInfo`.
+    public static let keySHA1Hash = Self(__unchecked: (), rawValue: 1)
+
+    /// x509_name (2) — the CA's DER-encoded X.509 `DistinguishedName`.
+    public static let x509Name = Self(__unchecked: (), rawValue: 2)
+
+    /// cert_sha1_hash (3) — SHA-1 hash of the CA's DER certificate.
+    public static let certSHA1Hash = Self(__unchecked: (), rawValue: 3)
 }

@@ -22,9 +22,6 @@ extension RFC_6066 {
         init(__unchecked: Void, rawValue: UInt8) {
             self.rawValue = rawValue
         }
-
-        /// ocsp (1) — the status is an OCSP response (RFC 6960).
-        public static let ocsp = Self(__unchecked: (), rawValue: 1)
     }
 }
 
@@ -35,4 +32,10 @@ extension RFC_6066.CertificateStatusType: CustomStringConvertible {
         default: return "certificate_status_type(\(rawValue))"
         }
     }
+}
+
+extension RFC_6066.CertificateStatusType {
+
+    /// ocsp (1) — the status is an OCSP response (RFC 6960).
+    public static let ocsp = Self(__unchecked: (), rawValue: 1)
 }

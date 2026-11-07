@@ -21,12 +21,6 @@ extension RFC_6066.CertificateURL {
         init(__unchecked: Void, rawValue: UInt8) {
             self.rawValue = rawValue
         }
-
-        /// individual_certs (0) — each URL refers to a single DER certificate.
-        public static let individualCerts = Self(__unchecked: (), rawValue: 0)
-
-        /// pkipath (1) — a single URL refers to a DER PkiPath certificate chain.
-        public static let pkipath = Self(__unchecked: (), rawValue: 1)
     }
 }
 
@@ -38,4 +32,13 @@ extension RFC_6066.CertificateURL.CertChainType: CustomStringConvertible {
         default: return "cert_chain_type(\(rawValue))"
         }
     }
+}
+
+extension RFC_6066.CertificateURL.CertChainType {
+
+    /// individual_certs (0) — each URL refers to a single DER certificate.
+    public static let individualCerts = Self(__unchecked: (), rawValue: 0)
+
+    /// pkipath (1) — a single URL refers to a DER PkiPath certificate chain.
+    public static let pkipath = Self(__unchecked: (), rawValue: 1)
 }
