@@ -72,23 +72,25 @@ extension RFC_6066 {
         public init(hostName: HostName) {
             self.init(__unchecked: (), serverNameList: [ServerName(hostName: hostName)])
         }
+    }
+}
 
-        /// The offered `host_name`, if the list carries one.
-        public var hostName: HostName? {
-            serverNameList.first { $0.nameType == .hostName }?.hostName
-        }
+extension RFC_6066.ServerNameList {
+    /// The offered `host_name`, if the list carries one.
+    public var hostName: HostName? {
+        serverNameList.first { $0.nameType == .hostName }?.hostName
+    }
 
-        /// The extension type for this payload (`server_name`).
-        public static let extensionType: RFC_8446.Extension.ExtensionType = .serverName
+    /// The extension type for this payload (`server_name`).
+    public static let extensionType: RFC_8446.Extension.ExtensionType = .serverName
 
-        /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
-        ///
-        /// - Throws: ``RFC_8446/Extension/Data/Error`` if the body exceeds the
-        ///   envelope's 65535-byte limit.
-        public var extensionData: RFC_8446.Extension.Data {
-            get throws(RFC_8446.Extension.Data.Error) {
-                try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
-            }
+    /// Wraps this payload in a generic ``RFC_8446/Extension/Data`` envelope.
+    ///
+    /// - Throws: ``RFC_8446/Extension/Data/Error`` if the body exceeds the
+    ///   envelope's 65535-byte limit.
+    public var extensionData: RFC_8446.Extension.Data {
+        get throws(RFC_8446.Extension.Data.Error) {
+            try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
         }
     }
 }
