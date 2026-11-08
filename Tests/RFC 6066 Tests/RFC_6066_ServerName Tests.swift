@@ -28,7 +28,7 @@ extension `RFC_6066_ServerName Tests` {
         /// server_name_list length (14) | name_type (0) | host_name length (11) | "example.com"
         static let body: [Byte] = [Byte(0x00), Byte(0x0E), Byte(0x00), Byte(0x00), Byte(0x0B)] + exampleCom
 
-        @Suite("ServerNameList.Acknowledgement")
+        @Suite
         struct AcknowledgementTests {
             @Test
             func `Serializes to an empty body`() {
