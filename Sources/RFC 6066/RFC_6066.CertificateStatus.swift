@@ -53,21 +53,19 @@ extension RFC_6066 {
             }
             self.init(__unchecked: (), response: response)
         }
-    }
-}
 
-extension RFC_6066.CertificateStatus {
-    /// The wire discriminator for this response — always `ocsp(1)`.
-    public var statusType: CertificateStatusType { .ocsp }
+        /// The wire discriminator for this response — always `ocsp(1)`.
+        public var statusType: CertificateStatusType { .ocsp }
 
-    /// The extension type carrying this response in TLS 1.3 (`status_request`).
-    public static let extensionType: RFC_8446.Extension.ExtensionType = .statusRequest
+        /// The extension type carrying this response in TLS 1.3 (`status_request`).
+        public static let extensionType: RFC_8446.Extension.ExtensionType = .statusRequest
 
-    /// Wraps this response in a generic ``RFC_8446/Extension/Data`` envelope —
-    /// the TLS 1.3 `CertificateEntry` form (RFC 8446 Section 4.4.2.1).
-    public var extensionData: RFC_8446.Extension.Data {
-        get throws(RFC_8446.Extension.Data.Error) {
-            try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+        /// Wraps this response in a generic ``RFC_8446/Extension/Data`` envelope —
+        /// the TLS 1.3 `CertificateEntry` form (RFC 8446 Section 4.4.2.1).
+        public var extensionData: RFC_8446.Extension.Data {
+            get throws(RFC_8446.Extension.Data.Error) {
+                try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
+            }
         }
     }
 }
