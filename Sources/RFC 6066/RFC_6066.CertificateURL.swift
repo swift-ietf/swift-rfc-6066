@@ -47,10 +47,15 @@ extension RFC_6066 {
         /// - Parameters:
         ///   - type: How the objects at the URLs are packaged.
         ///   - urlAndHashList: The URLs and hashes (`<1..2^16-1>` — at least one).
-        /// - Throws: ``Error/emptyList`` if `urlAndHashList` is empty.
+        /// - Throws: ``Error/emptyList`` if `urlAndHashList` is empty, or
+        ///   ``Error/listTooLong(_:)`` if its encoding exceeds 65535 bytes.
         public init(type: CertChainType, urlAndHashList: [URLAndHash]) throws(Error) {
             guard !urlAndHashList.isEmpty else {
                 throw Error.emptyList
+            }
+            let length = urlAndHashList.reduce(0) { $0 + 2 + $1.url.count + 1 + 20 }
+            guard length <= 65535 else {
+                throw Error.listTooLong(length)
             }
             self.init(__unchecked: (), type: type, urlAndHashList: urlAndHashList)
         }

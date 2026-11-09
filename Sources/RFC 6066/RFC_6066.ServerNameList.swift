@@ -32,7 +32,7 @@ extension RFC_6066 {
     /// ## Example
     ///
     /// ```swift
-    /// let sni = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
+    /// let sni = try RFC_6066.ServerNameList(hostName: RFC_6066.HostName("example.com"))
     /// let ext = try sni.extensionData      // type == .serverName
     /// ```
     public struct ServerNameList: Sendable, Hashable {
@@ -52,25 +52,32 @@ extension RFC_6066 {
         ///
         /// - Parameter serverNameList: The entries (at least one; at most one per
         ///   `name_type`).
-        /// - Throws: ``Error/empty`` or ``Error/duplicateNameType(_:)``.
+        /// - Throws: ``Error/empty``, ``Error/duplicateNameType(_:)`` or
+        ///   ``Error/listTooLong(_:)``.
         public init(serverNameList: [ServerName]) throws(Error) {
             guard !serverNameList.isEmpty else {
                 throw Error.empty
             }
             var seen: Set<ServerName.NameType> = []
+            var length = 0
             for serverName in serverNameList {
                 guard seen.insert(serverName.nameType).inserted else {
                     throw Error.duplicateNameType(serverName.nameType)
                 }
+                length += 1 + 2 + serverName.hostName.rawValue.count
+            }
+            guard length <= 65535 else {
+                throw Error.listTooLong(length)
             }
             self.init(__unchecked: (), serverNameList: serverNameList)
         }
 
         /// Creates a single-entry server name list — the SNI case.
         ///
-        /// Cannot fail: one entry is non-empty and cannot collide with itself.
-        public init(hostName: HostName) {
-            self.init(__unchecked: (), serverNameList: [ServerName(hostName: hostName)])
+        /// - Throws: ``Error/listTooLong(_:)`` if the host name is longer than
+        ///   the 65532 bytes the list leaves room for.
+        public init(hostName: HostName) throws(Error) {
+            try self.init(serverNameList: [ServerName(hostName: hostName)])
         }
 
         /// The offered `host_name`, if the list carries one.

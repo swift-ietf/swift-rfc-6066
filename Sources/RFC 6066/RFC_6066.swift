@@ -41,7 +41,7 @@
 ///
 /// ```swift
 /// // Client: offer SNI for "example.com".
-/// let sni = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
+/// let sni = try RFC_6066.ServerNameList(hostName: RFC_6066.HostName("example.com"))
 /// let extensionData = try sni.extensionData   // RFC_8446.Extension.Data(type: .serverName, …)
 ///
 /// // Server: acknowledge in EncryptedExtensions with an empty body.

@@ -160,7 +160,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
     struct `ServerNameList` {
         @Test
         func `Serializes the RFC 6066 §3 body byte-for-byte`() throws {
-            let list = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
+            let list = try RFC_6066.ServerNameList(hostName: RFC_6066.HostName("example.com"))
 
             #expect(list.bytes == `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)`.body)
             #expect(list.bytes.count == 16)
@@ -168,7 +168,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `Wraps into an RFC 8446 extension envelope`() throws {
-            let list = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
+            let list = try RFC_6066.ServerNameList(hostName: RFC_6066.HostName("example.com"))
             let ext = try list.extensionData
 
             #expect(ext.type == .serverName)
@@ -182,7 +182,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `Round-trips`() throws {
-            let list = RFC_6066.ServerNameList(hostName: try RFC_6066.HostName("example.com"))
+            let list = try RFC_6066.ServerNameList(hostName: RFC_6066.HostName("example.com"))
             #expect(try RFC_6066.ServerNameList(binary: list.bytes) == list)
         }
 
@@ -191,6 +191,19 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
             let list = try RFC_6066.ServerNameList(binary: `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)`.body)
             #expect(list.serverNameList.count == 1)
             #expect(list.hostName?.description == "example.com")
+        }
+
+        @Test
+        func `List encoding is bounded at 65535 bytes`() throws {
+            let largest = try RFC_6066.HostName(rawValue: Array(repeating: Byte(0x61), count: 65532))
+            let list = try RFC_6066.ServerNameList(hostName: largest)
+            #expect(list.bytes.count == 2 + 65535)
+            #expect(try RFC_6066.ServerNameList(binary: list.bytes) == list)
+
+            let tooLarge = try RFC_6066.HostName(rawValue: Array(repeating: Byte(0x61), count: 65533))
+            #expect(throws: RFC_6066.ServerNameList.Error.listTooLong(65536)) {
+                try RFC_6066.ServerNameList(hostName: tooLarge)
+            }
         }
 
         @Test

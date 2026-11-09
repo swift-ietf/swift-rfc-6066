@@ -11,6 +11,10 @@ extension RFC_6066.ServerNameList {
         /// name of the same name_type."
         case duplicateNameType(_ nameType: RFC_6066.ServerName.NameType)
 
+        /// `server_name_list` is bounded `<1..2^16-1>`; its encoding cannot
+        /// exceed 65535 bytes.
+        case listTooLong(_ length: Int)
+
         /// An entry carried a `name_type` other than `host_name(0)`, which has no
         /// parseable length.
         case unknownNameType(_ rawValue: UInt8)
@@ -33,6 +37,8 @@ extension RFC_6066.ServerNameList.Error: CustomStringConvertible {
             return "TLS server_name list requires at least one name"
         case .duplicateNameType(let nameType):
             return "TLS server_name list has more than one name of type \(nameType)"
+        case .listTooLong(let length):
+            return "TLS server_name list too long: \(length) bytes (max 65535)"
         case .unknownNameType(let rawValue):
             return "TLS server_name list has unknown name_type \(rawValue) (only host_name(0) is defined)"
         case .invalidHostName(let error):

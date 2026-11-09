@@ -352,6 +352,26 @@ extension `RFC_6066_Extensions Tests` {
             }
 
             @Test
+            func `url_and_hash_list encoding is bounded at 65535 bytes`() throws {
+                let hash = try RFC_6066.SHA1Hash(rawValue: Self.hash)
+                let largest = try RFC_6066.CertificateURL.URLAndHash(
+                    url: Array(repeating: Byte(0x61), count: 65512),
+                    sha1Hash: hash
+                )
+                let message = try RFC_6066.CertificateURL(type: .individualCerts, urlAndHashList: [largest])
+                #expect(message.bytes.count == 1 + 2 + 65535)
+                #expect(try RFC_6066.CertificateURL(binary: message.bytes) == message)
+
+                let tooLarge = try RFC_6066.CertificateURL.URLAndHash(
+                    url: Array(repeating: Byte(0x61), count: 65513),
+                    sha1Hash: hash
+                )
+                #expect(throws: RFC_6066.CertificateURL.Error.listTooLong(65536)) {
+                    try RFC_6066.CertificateURL(type: .individualCerts, urlAndHashList: [tooLarge])
+                }
+            }
+
+            @Test
             func `SHA1Hash requires exactly 20 bytes`() {
                 let short: [Byte] = [Byte(0x01), Byte(0x02), Byte(0x03)]
                 #expect(throws: RFC_6066.SHA1Hash.Error.invalidLength(3)) {
@@ -373,8 +393,10 @@ extension `RFC_6066_Extensions Tests` {
 
             @Test
             func `Serializes each identifier variant byte-for-byte`() throws {
-                let distinguishedName: [Byte] = [Byte(0x30), Byte(0x00)]
-                let value = RFC_6066.TrustedAuthorities(
+                let distinguishedName = try RFC_6066.TrustedAuthority.DistinguishedName(
+                    rawValue: [Byte(0x30), Byte(0x00)]
+                )
+                let value = try RFC_6066.TrustedAuthorities(
                     trustedAuthoritiesList: [.preAgreed, .x509Name(distinguishedName)]
                 )
 
@@ -386,11 +408,15 @@ extension `RFC_6066_Extensions Tests` {
             @Test
             func `Round-trips every identifier type`() throws {
                 let hash = try RFC_6066.SHA1Hash(rawValue: Array(repeating: Byte(0xAB), count: 20))
-                let value = RFC_6066.TrustedAuthorities(
+                let value = try RFC_6066.TrustedAuthorities(
                     trustedAuthoritiesList: [
                         .preAgreed,
                         .keySHA1Hash(hash),
-                        .x509Name([Byte(0x30), Byte(0x03), Byte(0x02), Byte(0x01), Byte(0x00)]),
+                        .x509Name(
+                            RFC_6066.TrustedAuthority.DistinguishedName(
+                                rawValue: [Byte(0x30), Byte(0x03), Byte(0x02), Byte(0x01), Byte(0x00)]
+                            )
+                        ),
                         .certSHA1Hash(hash),
                     ]
                 )
@@ -400,6 +426,47 @@ extension `RFC_6066_Extensions Tests` {
                 #expect(value.trustedAuthoritiesList[1].identifierType == .keySHA1Hash)
                 #expect(value.trustedAuthoritiesList[2].identifierType == .x509Name)
                 #expect(value.trustedAuthoritiesList[3].identifierType == .certSHA1Hash)
+            }
+
+            @Test
+            func `DistinguishedName is bounded 1...65535 bytes`() throws {
+                #expect(throws: RFC_6066.TrustedAuthority.DistinguishedName.Error.empty) {
+                    try RFC_6066.TrustedAuthority.DistinguishedName(rawValue: [])
+                }
+                #expect(throws: RFC_6066.TrustedAuthority.DistinguishedName.Error.tooLong(65536)) {
+                    try RFC_6066.TrustedAuthority.DistinguishedName(rawValue: Array(repeating: Byte(0x30), count: 65536))
+                }
+                let largest = try RFC_6066.TrustedAuthority.DistinguishedName(
+                    rawValue: Array(repeating: Byte(0x30), count: 65535)
+                )
+                let authority = RFC_6066.TrustedAuthority.x509Name(largest)
+                #expect(authority.bytes.count == 1 + 2 + 65535)
+            }
+
+            @Test
+            func `Rejects an empty x509_name when decoding`() {
+                // list length (3) | x509_name(2) | DN length (0)
+                let bytes: [Byte] = [Byte(0x00), Byte(0x03), Byte(0x02), Byte(0x00), Byte(0x00)]
+                #expect(throws: RFC_6066.TrustedAuthorities.Error.invalidDistinguishedName(.empty)) {
+                    try RFC_6066.TrustedAuthorities(binary: bytes)
+                }
+            }
+
+            @Test
+            func `List encoding is bounded at 65535 bytes`() throws {
+                let largest = try RFC_6066.TrustedAuthority.DistinguishedName(
+                    rawValue: Array(repeating: Byte(0x30), count: 65532)
+                )
+                let value = try RFC_6066.TrustedAuthorities(trustedAuthoritiesList: [.x509Name(largest)])
+                #expect(value.bytes.count == 2 + 65535)
+                #expect(try RFC_6066.TrustedAuthorities(binary: value.bytes) == value)
+
+                let tooLarge = try RFC_6066.TrustedAuthority.DistinguishedName(
+                    rawValue: Array(repeating: Byte(0x30), count: 65533)
+                )
+                #expect(throws: RFC_6066.TrustedAuthorities.Error.listTooLong(65536)) {
+                    try RFC_6066.TrustedAuthorities(trustedAuthoritiesList: [.x509Name(tooLarge)])
+                }
             }
 
             @Test
