@@ -56,7 +56,7 @@ extension RFC_6066.TrustedAuthority {
         switch self {
         case .preAgreed: return 1
         case .keySHA1Hash, .certSHA1Hash: return 1 + 20
-        case .x509Name(let distinguishedName): return 1 + 2 + distinguishedName.rawValue.count
+        case .x509Name(let distinguishedName): return 1 + distinguishedName.encodedLength
         }
     }
 }
@@ -73,7 +73,7 @@ extension RFC_6066.TrustedAuthority: Binary.Serializable {
         case .keySHA1Hash(let hash), .certSHA1Hash(let hash):
             RFC_6066.SHA1Hash.serialize(hash, into: &buffer)
         case .x509Name(let distinguishedName):
-            RFC_6066.Wire.appendVector16(distinguishedName.rawValue, into: &buffer)
+            DistinguishedName.serialize(distinguishedName, into: &buffer)
         }
     }
 }

@@ -48,38 +48,6 @@ extension RFC_6066 {
             self.serverNameList = serverNameList
         }
 
-        /// Creates a server name list with validation.
-        ///
-        /// - Parameter serverNameList: The entries (at least one; at most one per
-        ///   `name_type`).
-        /// - Throws: ``Error/empty``, ``Error/duplicateNameType(_:)`` or
-        ///   ``Error/listTooLong(_:)``.
-        public init(serverNameList: [ServerName]) throws(Error) {
-            guard !serverNameList.isEmpty else {
-                throw Error.empty
-            }
-            var seen: Set<ServerName.NameType> = []
-            var length = 0
-            for serverName in serverNameList {
-                guard seen.insert(serverName.nameType).inserted else {
-                    throw Error.duplicateNameType(serverName.nameType)
-                }
-                length += 1 + 2 + serverName.hostName.rawValue.count
-            }
-            guard length <= 65535 else {
-                throw Error.listTooLong(length)
-            }
-            self.init(__unchecked: (), serverNameList: serverNameList)
-        }
-
-        /// Creates a single-entry server name list — the SNI case.
-        ///
-        /// - Throws: ``Error/listTooLong(_:)`` if the host name is longer than
-        ///   the 65532 bytes the list leaves room for.
-        public init(hostName: HostName) throws(Error) {
-            try self.init(serverNameList: [ServerName(hostName: hostName)])
-        }
-
         /// The offered `host_name`, if the list carries one.
         public var hostName: HostName? {
             serverNameList.first { $0.nameType == .hostName }?.hostName
@@ -97,6 +65,44 @@ extension RFC_6066 {
                 try RFC_8446.Extension.Data(type: Self.extensionType, data: self.bytes)
             }
         }
+    }
+}
+
+extension RFC_6066.ServerNameList {
+    /// Creates a server name list with validation.
+    ///
+    /// - Parameter serverNameList: The entries (at least one; at most one per
+    ///   `name_type`).
+    /// - Throws: ``Error/empty``, ``Error/duplicateNameType(_:)`` or
+    ///   ``Error/listTooLong(_:)``.
+    public init(serverNameList: [RFC_6066.ServerName]) throws(Error) {
+        guard !serverNameList.isEmpty else {
+            throw Error.empty
+        }
+        var seen: Set<RFC_6066.ServerName.NameType> = []
+        var length = 0
+        for serverName in serverNameList {
+            guard seen.insert(serverName.nameType).inserted else {
+                throw Error.duplicateNameType(serverName.nameType)
+            }
+            length += 1 + serverName.hostName.encodedLength
+        }
+        guard length <= 65535 else {
+            throw Error.listTooLong(length)
+        }
+        self.init(__unchecked: (), serverNameList: serverNameList)
+    }
+
+    /// Creates a single-entry server name list — the SNI case.
+    ///
+    /// - Throws: ``Error/listTooLong(_:)`` if the host name is longer than
+    ///   the 65532 bytes the list leaves room for.
+    public init(hostName: RFC_6066.HostName) throws(Error) {
+        let length = 1 + hostName.encodedLength
+        guard length <= 65535 else {
+            throw Error.listTooLong(length)
+        }
+        self.init(__unchecked: (), serverNameList: [RFC_6066.ServerName(hostName: hostName)])
     }
 }
 

@@ -36,24 +36,26 @@ extension RFC_6066 {
         init(__unchecked: Void, trustedAuthoritiesList: [TrustedAuthority]) {
             self.trustedAuthoritiesList = trustedAuthoritiesList
         }
+    }
+}
 
-        /// Creates an empty `trusted_ca_keys` payload.
-        public init() {
-            self.init(__unchecked: (), trustedAuthoritiesList: [])
-        }
+extension RFC_6066.TrustedAuthorities {
+    /// Creates an empty `trusted_ca_keys` payload.
+    public init() {
+        self.init(__unchecked: (), trustedAuthoritiesList: [])
+    }
 
-        /// Creates a `trusted_ca_keys` payload.
-        ///
-        /// - Parameter trustedAuthoritiesList: The CAs the client trusts.
-        /// - Throws: ``Error/listTooLong(_:)`` if the encoded list exceeds
-        ///   65535 bytes.
-        public init(trustedAuthoritiesList: [TrustedAuthority]) throws(Error) {
-            let length = trustedAuthoritiesList.reduce(0) { $0 + $1.encodedLength }
-            guard length <= 65535 else {
-                throw Error.listTooLong(length)
-            }
-            self.init(__unchecked: (), trustedAuthoritiesList: trustedAuthoritiesList)
+    /// Creates a `trusted_ca_keys` payload.
+    ///
+    /// - Parameter trustedAuthoritiesList: The CAs the client trusts.
+    /// - Throws: ``Error/listTooLong(_:)`` if the encoded list exceeds
+    ///   65535 bytes.
+    public init(trustedAuthoritiesList: [RFC_6066.TrustedAuthority]) throws(Error) {
+        let length = trustedAuthoritiesList.reduce(0) { $0 + $1.encodedLength }
+        guard length <= 65535 else {
+            throw Error.listTooLong(length)
         }
+        self.init(__unchecked: (), trustedAuthoritiesList: trustedAuthoritiesList)
     }
 }
 

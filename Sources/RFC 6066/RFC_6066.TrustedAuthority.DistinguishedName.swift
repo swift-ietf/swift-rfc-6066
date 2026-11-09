@@ -19,19 +19,38 @@ extension RFC_6066.TrustedAuthority {
         init(__unchecked: Void, rawValue: [Byte]) {
             self.rawValue = rawValue
         }
+    }
+}
 
-        /// Creates a distinguished name.
-        ///
-        /// - Parameter rawValue: The DER bytes (`opaque DistinguishedName<1..2^16-1>`).
-        /// - Throws: ``Error`` if the name is empty or exceeds 65535 bytes.
-        public init(rawValue: [Byte]) throws(Error) {
-            guard !rawValue.isEmpty else {
-                throw Error.empty
-            }
-            guard rawValue.count <= 65535 else {
-                throw Error.tooLong(rawValue.count)
-            }
-            self.init(__unchecked: (), rawValue: rawValue)
+extension RFC_6066.TrustedAuthority.DistinguishedName {
+    /// Creates a distinguished name.
+    ///
+    /// - Parameter rawValue: The DER bytes (`opaque DistinguishedName<1..2^16-1>`).
+    /// - Throws: ``Error`` if the name is empty or exceeds 65535 bytes.
+    public init(rawValue: [Byte]) throws(Error) {
+        guard !rawValue.isEmpty else {
+            throw Error.empty
         }
+        guard rawValue.count <= 65535 else {
+            throw Error.tooLong(rawValue.count)
+        }
+        self.init(__unchecked: (), rawValue: rawValue)
+    }
+}
+
+extension RFC_6066.TrustedAuthority.DistinguishedName {
+    /// The number of bytes this name occupies on the wire: the `uint16`
+    /// length prefix and the DER.
+    var encodedLength: Int {
+        2 + rawValue.count
+    }
+
+    /// Serializes the name as the `opaque DistinguishedName<1..2^16-1>` vector
+    /// (`uint16` length prefix + the DER bytes).
+    static func serialize<Buffer: RangeReplaceableCollection>(
+        _ distinguishedName: Self,
+        into buffer: inout Buffer
+    ) where Buffer.Element == Byte {
+        RFC_6066.Wire.appendVector16(distinguishedName.rawValue, into: &buffer)
     }
 }

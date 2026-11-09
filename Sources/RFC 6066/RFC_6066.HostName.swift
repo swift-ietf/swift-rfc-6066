@@ -64,6 +64,14 @@ extension RFC_6066 {
     }
 }
 
+extension RFC_6066.HostName {
+    /// The number of bytes this hostname occupies on the wire: the `uint16`
+    /// length prefix and the bytes.
+    var encodedLength: Int {
+        2 + rawValue.count
+    }
+}
+
 extension RFC_6066.HostName: Binary.Serializable {
     /// Serializes the hostname as the `opaque HostName<1..2^16-1>` vector
     /// (`uint16` length prefix + the ASCII bytes).
