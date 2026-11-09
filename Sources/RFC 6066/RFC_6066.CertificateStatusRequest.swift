@@ -85,15 +85,24 @@ extension RFC_6066.CertificateStatusRequest: Binary.Serializable {
             throw .unsupportedStatusType(statusType)
         }
 
-        let request: OCSPStatusRequest
+        let fields: (responderIDList: [[Byte]], requestExtensions: [Byte])
         do {
-            request = try reader.ocspStatusRequest()
+            fields = try reader.ocspStatusRequestFields()
             try reader.expectEnd()
         } catch {
             switch error {
             case .trailingData(let remaining): throw .trailingData(remaining)
             case .truncated, .lengthOverflow: throw .truncated
             }
+        }
+        let request: OCSPStatusRequest
+        do {
+            request = try OCSPStatusRequest(
+                responderIDList: fields.responderIDList,
+                requestExtensions: fields.requestExtensions
+            )
+        } catch {
+            throw .invalidRequest(error)
         }
         self.init(request: request)
     }

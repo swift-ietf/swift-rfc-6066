@@ -75,10 +75,10 @@ extension `RFC_6066_UInt8 Tests` {
         }
 
         @Test
-        func `OCSPStatusRequest forwarder constructs from [UInt8]`() {
+        func `OCSPStatusRequest forwarder constructs from [UInt8]`() throws {
             let responderIDs: [[UInt8]] = [[0xAA, 0xBB]]
             let requestExtensions: [UInt8] = [0xCC]
-            let request = RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+            let request = try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
                 responderIDList: responderIDs,
                 requestExtensions: requestExtensions
             )

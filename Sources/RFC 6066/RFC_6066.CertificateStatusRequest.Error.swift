@@ -5,6 +5,10 @@ extension RFC_6066.CertificateStatusRequest {
         /// variant has no known length and cannot be read.
         case unsupportedStatusType(_ rawValue: UInt8)
 
+        /// The request failed
+        /// ``RFC_6066/CertificateStatusRequest/OCSPStatusRequest`` validation.
+        case invalidRequest(_ error: RFC_6066.CertificateStatusRequest.OCSPStatusRequest.Error)
+
         /// The input ended before the request was complete.
         case truncated
 
@@ -18,6 +22,8 @@ extension RFC_6066.CertificateStatusRequest.Error: CustomStringConvertible {
         switch self {
         case .unsupportedStatusType(let rawValue):
             return "TLS status_request has unsupported status_type \(rawValue) (only ocsp(1) is defined)"
+        case .invalidRequest(let error):
+            return "TLS status_request has an invalid OCSP request: \(error)"
         case .truncated:
             return "TLS status_request truncated"
         case .trailingData(let remaining):

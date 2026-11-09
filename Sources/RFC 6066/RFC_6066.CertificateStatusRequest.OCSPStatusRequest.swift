@@ -29,17 +29,50 @@ extension RFC_6066.CertificateStatusRequest {
         /// DER-encoded OCSP request extensions (may be empty).
         public let requestExtensions: [Byte]
 
-        /// Creates an OCSP status request.
-        ///
-        /// - Parameters:
-        ///   - responderIDList: DER-encoded `ResponderID`s; empty means "any
-        ///     responder known to the server".
-        ///   - requestExtensions: DER-encoded OCSP `Extensions`; empty means none.
-        public init(responderIDList: [[Byte]] = [], requestExtensions: [Byte] = []) {
+        /// Creates an OCSP status request WITHOUT validation.
+        init(__unchecked: Void, responderIDList: [[Byte]], requestExtensions: [Byte]) {
             self.responderIDList = responderIDList
             self.requestExtensions = requestExtensions
         }
 
+        /// Creates an OCSP status request with no responder IDs and no request
+        /// extensions — "any responder known to the server, no extensions".
+        public init() {
+            self.init(__unchecked: (), responderIDList: [], requestExtensions: [])
+        }
+
+        /// Creates an OCSP status request.
+        ///
+        /// - Parameters:
+        ///   - responderIDList: DER-encoded `ResponderID`s (each 1...65535
+        ///     bytes); empty means "any responder known to the server".
+        ///   - requestExtensions: DER-encoded OCSP `Extensions` (at most 65535
+        ///     bytes); empty means none.
+        /// - Throws: ``Error`` if a responder ID is empty or a vector exceeds
+        ///   its `2^16-1` bound.
+        public init(responderIDList: [[Byte]], requestExtensions: [Byte] = []) throws(Error) {
+            var listLength = 0
+            for responderID in responderIDList {
+                guard !responderID.isEmpty else {
+                    throw Error.emptyResponderID
+                }
+                guard responderID.count <= 65535 else {
+                    throw Error.responderIDTooLong(responderID.count)
+                }
+                listLength += 2 + responderID.count
+            }
+            guard listLength <= 65535 else {
+                throw Error.responderIDListTooLong(listLength)
+            }
+            guard requestExtensions.count <= 65535 else {
+                throw Error.requestExtensionsTooLong(requestExtensions.count)
+            }
+            self.init(
+                __unchecked: (),
+                responderIDList: responderIDList,
+                requestExtensions: requestExtensions
+            )
+        }
     }
 }
 
@@ -58,10 +91,13 @@ extension RFC_6066.CertificateStatusRequest.OCSPStatusRequest: Binary.Serializab
 }
 
 extension RFC_6066.Wire.Reader {
-    /// Reads one ``RFC_6066/CertificateStatusRequest/OCSPStatusRequest`` from the
-    /// cursor (the body after the `status_type` discriminator).
-    mutating func ocspStatusRequest() throws(RFC_6066.Wire.Error)
-        -> RFC_6066.CertificateStatusRequest.OCSPStatusRequest
+    /// Reads the raw fields of one `OCSPStatusRequest` from the cursor (the
+    /// body after the `status_type` discriminator).
+    ///
+    /// Validation is the caller's job — the reader deals only in
+    /// presentation-language forms.
+    mutating func ocspStatusRequestFields() throws(RFC_6066.Wire.Error)
+        -> (responderIDList: [[Byte]], requestExtensions: [Byte])
     {
         let block = try vector16()
         var sub = RFC_6066.Wire.Reader(block)
@@ -70,9 +106,6 @@ extension RFC_6066.Wire.Reader {
             responderIDList.append(try sub.vector16())
         }
         let requestExtensions = try vector16()
-        return RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
-            responderIDList: responderIDList,
-            requestExtensions: requestExtensions
-        )
+        return (responderIDList, requestExtensions)
     }
 }

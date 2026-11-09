@@ -106,11 +106,11 @@ extension `RFC_6066_Extensions Tests` {
             }
 
             @Test
-            func `Populated OCSP request serializes byte-for-byte`() {
+            func `Populated OCSP request serializes byte-for-byte`() throws {
                 let responderID: [Byte] = [Byte(0xAA), Byte(0xBB)]
                 let requestExtensions: [Byte] = [Byte(0xCC)]
                 let request = RFC_6066.CertificateStatusRequest(
-                    request: RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                    request: try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
                         responderIDList: [responderID],
                         requestExtensions: requestExtensions
                     )
@@ -124,7 +124,7 @@ extension `RFC_6066_Extensions Tests` {
             @Test
             func `Round-trips`() throws {
                 let request = RFC_6066.CertificateStatusRequest(
-                    request: RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                    request: try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
                         responderIDList: [[Byte(0xAA), Byte(0xBB)], [Byte(0x01)]],
                         requestExtensions: [Byte(0xCC), Byte(0xDD)]
                     )
@@ -146,6 +146,59 @@ extension `RFC_6066_Extensions Tests` {
                 #expect(throws: RFC_6066.CertificateStatusRequest.Error.truncated) {
                     try RFC_6066.CertificateStatusRequest(binary: bytes)
                 }
+            }
+
+            @Test
+            func `Rejects an empty ResponderID on construction`() {
+                #expect(throws: RFC_6066.CertificateStatusRequest.OCSPStatusRequest.Error.emptyResponderID) {
+                    try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(responderIDList: [[]])
+                }
+            }
+
+            @Test
+            func `Rejects an empty ResponderID when decoding`() {
+                // status_type | responder_id_list<2> { ResponderID<0> } | Extensions<0>
+                let bytes: [Byte] = [Byte(0x01), Byte(0x00), Byte(0x02), Byte(0x00), Byte(0x00), Byte(0x00), Byte(0x00)]
+                #expect(
+                    throws: RFC_6066.CertificateStatusRequest.Error.invalidRequest(.emptyResponderID)
+                ) {
+                    try RFC_6066.CertificateStatusRequest(binary: bytes)
+                }
+            }
+
+            @Test
+            func `ResponderID is bounded at 65535 bytes`() throws {
+                #expect(throws: RFC_6066.CertificateStatusRequest.OCSPStatusRequest.Error.responderIDTooLong(65536)) {
+                    try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                        responderIDList: [Array(repeating: Byte(0xAA), count: 65536)]
+                    )
+                }
+                #expect(throws: RFC_6066.CertificateStatusRequest.OCSPStatusRequest.Error.responderIDListTooLong(65537)) {
+                    try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                        responderIDList: [Array(repeating: Byte(0xAA), count: 65535)]
+                    )
+                }
+                let largest = try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                    responderIDList: [Array(repeating: Byte(0xAA), count: 65533)]
+                )
+                let request = RFC_6066.CertificateStatusRequest(request: largest)
+                #expect(try RFC_6066.CertificateStatusRequest(binary: request.bytes) == request)
+            }
+
+            @Test
+            func `Request extensions are bounded at 65535 bytes`() throws {
+                #expect(throws: RFC_6066.CertificateStatusRequest.OCSPStatusRequest.Error.requestExtensionsTooLong(65536)) {
+                    try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                        responderIDList: [],
+                        requestExtensions: Array(repeating: Byte(0xCC), count: 65536)
+                    )
+                }
+                let largest = try RFC_6066.CertificateStatusRequest.OCSPStatusRequest(
+                    responderIDList: [],
+                    requestExtensions: Array(repeating: Byte(0xCC), count: 65535)
+                )
+                let request = RFC_6066.CertificateStatusRequest(request: largest)
+                #expect(try RFC_6066.CertificateStatusRequest(binary: request.bytes) == request)
             }
         }
 
