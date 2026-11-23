@@ -1,7 +1,7 @@
 public import Binary
 public import RFC_8446
 
-extension IETF.RFC.`6066` {
+extension IETF.RFC.`6066`.Fragment {
     /// `max_fragment_length` extension payload (`extension_data` body).
     ///
     /// ## Wire Format
@@ -29,7 +29,7 @@ extension IETF.RFC.`6066` {
     /// TLS 1.3 does not carry `max_fragment_length` (RFC 8446 Section 4.2);
     /// RFC 8449 `record_size_limit` supersedes it. The type is defined here for
     /// TLS 1.2 peers and specification completeness.
-    public enum MaxFragmentLength: UInt8, Sendable, Hashable, CaseIterable {
+    public enum Length: UInt8, Sendable, Hashable, CaseIterable {
         /// `2^9(1)` — a 512-byte maximum fragment length.
         case bytes512 = 1
 
@@ -44,7 +44,7 @@ extension IETF.RFC.`6066` {
     }
 }
 
-extension IETF.RFC.`6066`.MaxFragmentLength {
+extension IETF.RFC.`6066`.Fragment.Length {
     /// The negotiated maximum fragment length in bytes (512, 1024, 2048, or 4096).
     public var fragmentLength: Int {
         switch self {
@@ -66,7 +66,7 @@ extension IETF.RFC.`6066`.MaxFragmentLength {
     }
 }
 
-extension IETF.RFC.`6066`.MaxFragmentLength: Binary.Serializable {
+extension IETF.RFC.`6066`.Fragment.Length: Binary.Serializable {
     /// Serializes the single-byte `MaxFragmentLength` code point.
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,
@@ -96,7 +96,7 @@ extension IETF.RFC.`6066`.MaxFragmentLength: Binary.Serializable {
     }
 }
 
-extension IETF.RFC.`6066`.MaxFragmentLength: CustomStringConvertible {
+extension IETF.RFC.`6066`.Fragment.Length: CustomStringConvertible {
     public var description: String {
         switch self {
         case .bytes512: return "2^9"

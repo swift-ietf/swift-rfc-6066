@@ -15,17 +15,17 @@ extension IETF.RFC.`6066` {
     /// ```
     ///
     /// `host_name(0)` is the only registered ``NameType``, so the variant
-    /// collapses to a single stored ``HostName``; ``nameType`` reports the wire
+    /// collapses to a single stored ``Host/Name``; ``nameType`` reports the wire
     /// discriminator. Parsing an entry whose `name_type` is not `host_name`
     /// fails with ``Error/unknownNameType(_:)`` — the RFC defines no generic
     /// length prefix for other variants, so the bytes after an unknown
     /// discriminator cannot be skipped.
     public struct ServerName: Sendable, Hashable {
         /// The server name (an ASCII DNS hostname).
-        public let hostName: HostName
+        public let hostName: Host.Name
 
         /// Creates a `host_name` server name entry.
-        public init(hostName: HostName) {
+        public init(hostName: Host.Name) {
             self.hostName = hostName
         }
     }
@@ -43,7 +43,7 @@ extension IETF.RFC.`6066`.ServerName: Binary.Serializable {
         into buffer: inout Buffer
     ) where Buffer.Element == Byte {
         buffer.append(Byte(serverName.nameType.rawValue))
-        IETF.RFC.`6066`.HostName.serialize(serverName.hostName, into: &buffer)
+        IETF.RFC.`6066`.Host.Name.serialize(serverName.hostName, into: &buffer)
     }
 
     /// Parses exactly one `ServerName` structure.
@@ -68,9 +68,9 @@ extension IETF.RFC.`6066`.ServerName: Binary.Serializable {
         guard nameType == IETF.RFC.`6066`.ServerName.NameType.hostName.rawValue else {
             throw .unknownNameType(nameType)
         }
-        let hostName: IETF.RFC.`6066`.HostName
+        let hostName: IETF.RFC.`6066`.Host.Name
         do {
-            hostName = try IETF.RFC.`6066`.HostName(rawValue: name)
+            hostName = try IETF.RFC.`6066`.Host.Name(rawValue: name)
         } catch {
             throw .invalidHostName(error)
         }

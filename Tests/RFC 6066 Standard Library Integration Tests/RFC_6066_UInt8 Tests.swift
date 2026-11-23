@@ -23,23 +23,23 @@ extension `RFC_6066_UInt8 Tests` {
         @Test
         func `HostName forwarder constructs from [UInt8]`() throws {
             let uint8Bytes: [UInt8] = Array("example.com".utf8)
-            let hostName = try IETF.RFC.`6066`.HostName(rawValue: uint8Bytes)
+            let hostName = try IETF.RFC.`6066`.Host.Name(rawValue: uint8Bytes)
             #expect(hostName.description == "example.com")
         }
 
         @Test
         func `HostName forwarder rejects empty [UInt8]`() {
             let uint8Bytes: [UInt8] = []
-            #expect(throws: IETF.RFC.`6066`.HostName.Error.empty) {
-                try IETF.RFC.`6066`.HostName(rawValue: uint8Bytes)
+            #expect(throws: IETF.RFC.`6066`.Host.Name.Error.empty) {
+                try IETF.RFC.`6066`.Host.Name(rawValue: uint8Bytes)
             }
         }
 
         @Test
         func `HostName forwarder rejects a trailing dot`() {
             let uint8Bytes: [UInt8] = Array("example.com.".utf8)
-            #expect(throws: IETF.RFC.`6066`.HostName.Error.trailingDot) {
-                try IETF.RFC.`6066`.HostName(rawValue: uint8Bytes)
+            #expect(throws: IETF.RFC.`6066`.Host.Name.Error.trailingDot) {
+                try IETF.RFC.`6066`.Host.Name(rawValue: uint8Bytes)
             }
         }
 

@@ -1,7 +1,7 @@
 internal import Byte
 public import RFC_6066
 
-extension IETF.RFC.`6066`.HostName {
+extension IETF.RFC.`6066`.Host.Name {
     /// Stdlib-interop forwarder: construction from `[UInt8]` rawValue.
     @_disfavoredOverload
     public init(rawValue: [UInt8]) throws(Error) {

@@ -1,6 +1,6 @@
 public import Binary
 
-extension IETF.RFC.`6066` {
+extension IETF.RFC.`6066`.Host {
     /// `HostName` — the fully qualified DNS hostname of the server.
     ///
     /// ## Wire Format
@@ -24,7 +24,7 @@ extension IETF.RFC.`6066` {
     ///
     /// The bytes are carried opaquely: internationalized names must already be
     /// A-label (Punycode, RFC 5890) encoded by the caller.
-    public struct HostName: Sendable, Hashable {
+    public struct Name: Sendable, Hashable {
         /// The hostname bytes (opaque byte-domain — ASCII per RFC 6066).
         public let rawValue: [Byte]
 
@@ -64,7 +64,7 @@ extension IETF.RFC.`6066` {
     }
 }
 
-extension IETF.RFC.`6066`.HostName {
+extension IETF.RFC.`6066`.Host.Name {
     /// The number of bytes this hostname occupies on the wire: the `uint16`
     /// length prefix and the bytes.
     var encodedLength: Int {
@@ -72,7 +72,7 @@ extension IETF.RFC.`6066`.HostName {
     }
 }
 
-extension IETF.RFC.`6066`.HostName: Binary.Serializable {
+extension IETF.RFC.`6066`.Host.Name: Binary.Serializable {
     /// Serializes the hostname as the `opaque HostName<1..2^16-1>` vector
     /// (`uint16` length prefix + the ASCII bytes).
     public static func serialize<Buffer: RangeReplaceableCollection>(
@@ -100,7 +100,7 @@ extension IETF.RFC.`6066`.HostName: Binary.Serializable {
     }
 }
 
-extension IETF.RFC.`6066`.HostName: CustomStringConvertible {
+extension IETF.RFC.`6066`.Host.Name: CustomStringConvertible {
     public var description: String {
         String(decoding: rawValue, as: UTF8.self)
     }

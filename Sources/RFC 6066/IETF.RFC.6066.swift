@@ -13,12 +13,12 @@ public import IETF_RFC
 /// - ``ServerNameList``: the `server_name` (SNI) payload — the client's list of
 ///   names, plus ``ServerNameList/Acknowledgement`` for the server's empty
 ///   response body.
-/// - ``MaxFragmentLength``: the `max_fragment_length` payload.
+/// - ``Fragment/Length``: the `max_fragment_length` payload.
 /// - ``CertificateStatusRequest``: the `status_request` (OCSP) request payload.
 /// - ``CertificateStatus``: the OCSP response structure — the TLS 1.2
 ///   `CertificateStatus` handshake message, and the TLS 1.3 `status_request`
 ///   response body (RFC 8446 Section 4.4.2.1).
-/// - ``TruncatedHMAC``: the (empty) `truncated_hmac` payload.
+/// - ``HMAC/Truncated``: the (empty) `truncated_hmac` payload.
 /// - ``ClientCertificateURL`` / ``CertificateURL``: the (empty)
 ///   `client_certificate_url` payload and its `CertificateURL` handshake message.
 /// - ``TrustedAuthorities``: the `trusted_ca_keys` payload.

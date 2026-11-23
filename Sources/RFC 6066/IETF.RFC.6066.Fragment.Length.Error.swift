@@ -1,4 +1,4 @@
-extension IETF.RFC.`6066`.MaxFragmentLength {
+extension IETF.RFC.`6066`.Fragment.Length {
     /// Errors raised when parsing a `max_fragment_length` payload.
     public enum Error: Swift.Error, Sendable, Equatable {
         /// The code point is not one of `2^9(1)`, `2^10(2)`, `2^11(3)`, `2^12(4)`.
@@ -15,7 +15,7 @@ extension IETF.RFC.`6066`.MaxFragmentLength {
     }
 }
 
-extension IETF.RFC.`6066`.MaxFragmentLength.Error: CustomStringConvertible {
+extension IETF.RFC.`6066`.Fragment.Length.Error: CustomStringConvertible {
     public var description: String {
         switch self {
         case .unknownLength(let rawValue):

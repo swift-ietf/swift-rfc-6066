@@ -71,17 +71,17 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
     struct `HostName` {
         @Test
         func `Creates from string`() throws {
-            let hostName = try IETF.RFC.`6066`.HostName("example.com")
+            let hostName = try IETF.RFC.`6066`.Host.Name("example.com")
             #expect(hostName.description == "example.com")
             #expect(hostName.rawValue == `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)`.exampleCom)
         }
 
         @Test
         func `Serializes as a uint16-length-prefixed vector`() throws {
-            let hostName = try IETF.RFC.`6066`.HostName("example.com")
+            let hostName = try IETF.RFC.`6066`.Host.Name("example.com")
 
             var buffer: [Byte] = []
-            IETF.RFC.`6066`.HostName.serialize(hostName, into: &buffer)
+            IETF.RFC.`6066`.Host.Name.serialize(hostName, into: &buffer)
 
             let expected: [Byte] = [Byte(0x00), Byte(0x0B)] + `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)`.exampleCom
             #expect(buffer == expected)
@@ -89,15 +89,15 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `Round-trips`() throws {
-            let hostName = try IETF.RFC.`6066`.HostName("example.com")
-            #expect(try IETF.RFC.`6066`.HostName(binary: hostName.bytes) == hostName)
+            let hostName = try IETF.RFC.`6066`.Host.Name("example.com")
+            #expect(try IETF.RFC.`6066`.Host.Name(binary: hostName.bytes) == hostName)
         }
 
         @Test
         func `Rejects empty host name`() {
             let empty: [Byte] = []
-            #expect(throws: IETF.RFC.`6066`.HostName.Error.empty) {
-                try IETF.RFC.`6066`.HostName(rawValue: empty)
+            #expect(throws: IETF.RFC.`6066`.Host.Name.Error.empty) {
+                try IETF.RFC.`6066`.Host.Name(rawValue: empty)
             }
         }
 
@@ -105,8 +105,8 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
         func `Rejects trailing dot`() {
             // RFC 6066 §3: "represented as a byte string using ASCII encoding
             // without a trailing dot".
-            #expect(throws: IETF.RFC.`6066`.HostName.Error.trailingDot) {
-                try IETF.RFC.`6066`.HostName("example.com.")
+            #expect(throws: IETF.RFC.`6066`.Host.Name.Error.trailingDot) {
+                try IETF.RFC.`6066`.Host.Name("example.com.")
             }
         }
 
@@ -114,8 +114,8 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
         func `Rejects non-ASCII bytes`() {
             // U+00E4 encodes as 0xC3 0xA4 in UTF-8 — internationalized names must
             // be A-label (Punycode) encoded before they reach HostName.
-            #expect(throws: IETF.RFC.`6066`.HostName.Error.nonASCII) {
-                try IETF.RFC.`6066`.HostName("exämple.com")
+            #expect(throws: IETF.RFC.`6066`.Host.Name.Error.nonASCII) {
+                try IETF.RFC.`6066`.Host.Name("exämple.com")
             }
         }
     }
@@ -124,14 +124,14 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
     struct `ServerName` {
         @Test
         func `Reports host_name as its name type`() throws {
-            let serverName = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.HostName("example.com"))
+            let serverName = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.Host.Name("example.com"))
             #expect(serverName.nameType == .hostName)
             #expect(serverName.nameType.rawValue == 0)
         }
 
         @Test
         func `Serializes name_type then host name`() throws {
-            let serverName = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.HostName("example.com"))
+            let serverName = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.Host.Name("example.com"))
 
             var buffer: [Byte] = []
             IETF.RFC.`6066`.ServerName.serialize(serverName, into: &buffer)
@@ -142,7 +142,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `Round-trips`() throws {
-            let serverName = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.HostName("example.com"))
+            let serverName = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.Host.Name("example.com"))
             #expect(try IETF.RFC.`6066`.ServerName(binary: serverName.bytes) == serverName)
         }
 
@@ -160,7 +160,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
     struct `ServerNameList` {
         @Test
         func `Serializes the RFC 6066 §3 body byte-for-byte`() throws {
-            let list = try IETF.RFC.`6066`.ServerNameList(hostName: IETF.RFC.`6066`.HostName("example.com"))
+            let list = try IETF.RFC.`6066`.ServerNameList(hostName: IETF.RFC.`6066`.Host.Name("example.com"))
 
             #expect(list.bytes == `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)`.body)
             #expect(list.bytes.count == 16)
@@ -168,7 +168,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `Wraps into an RFC 8446 extension envelope`() throws {
-            let list = try IETF.RFC.`6066`.ServerNameList(hostName: IETF.RFC.`6066`.HostName("example.com"))
+            let list = try IETF.RFC.`6066`.ServerNameList(hostName: IETF.RFC.`6066`.Host.Name("example.com"))
             let ext = try list.extensionData
 
             #expect(ext.type == .serverName)
@@ -182,7 +182,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `Round-trips`() throws {
-            let list = try IETF.RFC.`6066`.ServerNameList(hostName: IETF.RFC.`6066`.HostName("example.com"))
+            let list = try IETF.RFC.`6066`.ServerNameList(hostName: IETF.RFC.`6066`.Host.Name("example.com"))
             #expect(try IETF.RFC.`6066`.ServerNameList(binary: list.bytes) == list)
         }
 
@@ -195,12 +195,12 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
 
         @Test
         func `List encoding is bounded at 65535 bytes`() throws {
-            let largest = try IETF.RFC.`6066`.HostName(rawValue: Array(repeating: Byte(0x61), count: 65532))
+            let largest = try IETF.RFC.`6066`.Host.Name(rawValue: Array(repeating: Byte(0x61), count: 65532))
             let list = try IETF.RFC.`6066`.ServerNameList(hostName: largest)
             #expect(list.bytes.count == 2 + 65535)
             #expect(try IETF.RFC.`6066`.ServerNameList(binary: list.bytes) == list)
 
-            let tooLarge = try IETF.RFC.`6066`.HostName(rawValue: Array(repeating: Byte(0x61), count: 65533))
+            let tooLarge = try IETF.RFC.`6066`.Host.Name(rawValue: Array(repeating: Byte(0x61), count: 65533))
             #expect(throws: IETF.RFC.`6066`.ServerNameList.Error.listTooLong(65536)) {
                 try IETF.RFC.`6066`.ServerNameList(hostName: tooLarge)
             }
@@ -222,7 +222,7 @@ extension `RFC_6066_ServerName Tests`.`RFC 6066 server_name (SNI)` {
         func `Rejects duplicate name types`() throws {
             // RFC 6066 §3: "The ServerNameList MUST NOT contain more than one name
             // of the same name_type."
-            let entry = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.HostName("example.com"))
+            let entry = IETF.RFC.`6066`.ServerName(hostName: try IETF.RFC.`6066`.Host.Name("example.com"))
             #expect(throws: IETF.RFC.`6066`.ServerNameList.Error.duplicateNameType(.hostName)) {
                 try IETF.RFC.`6066`.ServerNameList(serverNameList: [entry, entry])
             }

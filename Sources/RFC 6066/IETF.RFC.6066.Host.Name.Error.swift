@@ -1,4 +1,4 @@
-extension IETF.RFC.`6066`.HostName {
+extension IETF.RFC.`6066`.Host.Name {
     /// Errors raised when creating or parsing a hostname.
     public enum Error: Swift.Error, Sendable, Equatable {
         /// `HostName` is bounded `<1..2^16-1>`; it cannot be empty.
@@ -22,7 +22,7 @@ extension IETF.RFC.`6066`.HostName {
     }
 }
 
-extension IETF.RFC.`6066`.HostName.Error: CustomStringConvertible {
+extension IETF.RFC.`6066`.Host.Name.Error: CustomStringConvertible {
     public var description: String {
         switch self {
         case .empty:

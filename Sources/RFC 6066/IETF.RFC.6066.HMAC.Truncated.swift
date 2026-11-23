@@ -1,7 +1,7 @@
 public import Binary
 public import RFC_8446
 
-extension IETF.RFC.`6066` {
+extension IETF.RFC.`6066`.HMAC {
     /// `truncated_hmac` extension payload (`extension_data` body) — **empty**.
     ///
     /// RFC 6066 Section 7 defines no structure: "The 'extension_data' field of
@@ -14,13 +14,13 @@ extension IETF.RFC.`6066` {
     /// TLS 1.3 does not carry `truncated_hmac` (RFC 8446 Section 4.2) — its AEAD
     /// cipher suites have no separate HMAC to truncate. The type is defined here
     /// for TLS 1.2 peers and specification completeness.
-    public struct TruncatedHMAC: Sendable, Hashable {
+    public struct Truncated: Sendable, Hashable {
         /// Creates the empty `truncated_hmac` body.
         public init() {}
     }
 }
 
-extension IETF.RFC.`6066`.TruncatedHMAC {
+extension IETF.RFC.`6066`.HMAC.Truncated {
     /// The extension type for this payload (`truncated_hmac`).
     public static let extensionType: IETF.RFC.`8446`.Extension.ExtensionType = .truncatedHMAC
 
@@ -33,7 +33,7 @@ extension IETF.RFC.`6066`.TruncatedHMAC {
     }
 }
 
-extension IETF.RFC.`6066`.TruncatedHMAC: Binary.Serializable {
+extension IETF.RFC.`6066`.HMAC.Truncated: Binary.Serializable {
     /// Appends nothing: the `truncated_hmac` body is empty.
     public static func serialize<Buffer: RangeReplaceableCollection>(
         _ value: Self,

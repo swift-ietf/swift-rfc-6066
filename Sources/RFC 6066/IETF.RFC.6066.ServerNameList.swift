@@ -49,7 +49,7 @@ extension IETF.RFC.`6066` {
         }
 
         /// The offered `host_name`, if the list carries one.
-        public var hostName: HostName? {
+        public var hostName: Host.Name? {
             serverNameList.first { $0.nameType == .hostName }?.hostName
         }
 
@@ -97,7 +97,7 @@ extension IETF.RFC.`6066`.ServerNameList {
     ///
     /// - Throws: ``Error/listTooLong(_:)`` if the host name is longer than
     ///   the 65532 bytes the list leaves room for.
-    public init(hostName: IETF.RFC.`6066`.HostName) throws(Error) {
+    public init(hostName: IETF.RFC.`6066`.Host.Name) throws(Error) {
         let length = 1 + hostName.encodedLength
         guard length <= 65535 else {
             throw Error.listTooLong(length)

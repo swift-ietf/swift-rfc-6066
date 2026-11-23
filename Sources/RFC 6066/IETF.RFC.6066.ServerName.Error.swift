@@ -5,8 +5,8 @@ extension IETF.RFC.`6066`.ServerName {
         /// variant has no known length and cannot be read.
         case unknownNameType(_ rawValue: UInt8)
 
-        /// The `host_name` body failed ``RFC_6066/HostName`` validation.
-        case invalidHostName(_ error: IETF.RFC.`6066`.HostName.Error)
+        /// The `host_name` body failed ``RFC_6066/Host/Name`` validation.
+        case invalidHostName(_ error: IETF.RFC.`6066`.Host.Name.Error)
 
         /// The input ended before the entry was complete.
         case truncated

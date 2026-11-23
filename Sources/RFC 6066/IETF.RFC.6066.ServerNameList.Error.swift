@@ -19,8 +19,8 @@ extension IETF.RFC.`6066`.ServerNameList {
         /// parseable length.
         case unknownNameType(_ rawValue: UInt8)
 
-        /// An entry's `host_name` failed ``RFC_6066/HostName`` validation.
-        case invalidHostName(_ error: IETF.RFC.`6066`.HostName.Error)
+        /// An entry's `host_name` failed ``RFC_6066/Host/Name`` validation.
+        case invalidHostName(_ error: IETF.RFC.`6066`.Host.Name.Error)
 
         /// The input ended before the list was complete.
         case truncated

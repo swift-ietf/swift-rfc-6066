@@ -51,26 +51,26 @@ extension `RFC_6066_Extensions Tests` {
         struct `max_fragment_length` {
             @Test
             func `Code points map to fragment lengths`() {
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes512.rawValue == 1)
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes1024.rawValue == 2)
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes2048.rawValue == 3)
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes4096.rawValue == 4)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes512.rawValue == 1)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes1024.rawValue == 2)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes2048.rawValue == 3)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes4096.rawValue == 4)
 
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes512.fragmentLength == 512)
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes1024.fragmentLength == 1024)
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes2048.fragmentLength == 2048)
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes4096.fragmentLength == 4096)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes512.fragmentLength == 512)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes1024.fragmentLength == 1024)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes2048.fragmentLength == 2048)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes4096.fragmentLength == 4096)
             }
 
             @Test
             func `Serializes to a single byte`() {
                 let expected: [Byte] = [Byte(0x02)]
-                #expect(IETF.RFC.`6066`.MaxFragmentLength.bytes1024.bytes == expected)
+                #expect(IETF.RFC.`6066`.Fragment.Length.bytes1024.bytes == expected)
             }
 
-            @Test(arguments: IETF.RFC.`6066`.MaxFragmentLength.allCases)
-            func `Round-trips`(value: IETF.RFC.`6066`.MaxFragmentLength) throws {
-                #expect(try IETF.RFC.`6066`.MaxFragmentLength(binary: value.bytes) == value)
+            @Test(arguments: IETF.RFC.`6066`.Fragment.Length.allCases)
+            func `Round-trips`(value: IETF.RFC.`6066`.Fragment.Length) throws {
+                #expect(try IETF.RFC.`6066`.Fragment.Length(binary: value.bytes) == value)
                 #expect(value.extensionData.type == .maxFragmentLength)
             }
 
@@ -78,16 +78,16 @@ extension `RFC_6066_Extensions Tests` {
             func `Rejects an illegal code point`() {
                 // RFC 6066 §4 allows only 1...4; anything else is illegal_parameter.
                 let bytes: [Byte] = [Byte(0x05)]
-                #expect(throws: IETF.RFC.`6066`.MaxFragmentLength.Error.unknownLength(5)) {
-                    try IETF.RFC.`6066`.MaxFragmentLength(binary: bytes)
+                #expect(throws: IETF.RFC.`6066`.Fragment.Length.Error.unknownLength(5)) {
+                    try IETF.RFC.`6066`.Fragment.Length(binary: bytes)
                 }
             }
 
             @Test
             func `Rejects trailing bytes`() {
                 let bytes: [Byte] = [Byte(0x02), Byte(0x02)]
-                #expect(throws: IETF.RFC.`6066`.MaxFragmentLength.Error.trailingData(1)) {
-                    try IETF.RFC.`6066`.MaxFragmentLength(binary: bytes)
+                #expect(throws: IETF.RFC.`6066`.Fragment.Length.Error.trailingData(1)) {
+                    try IETF.RFC.`6066`.Fragment.Length(binary: bytes)
                 }
             }
         }
@@ -253,7 +253,7 @@ extension `RFC_6066_Extensions Tests` {
         struct `truncated_hmac` {
             @Test
             func `Serializes to an empty body`() {
-                let value = IETF.RFC.`6066`.TruncatedHMAC()
+                let value = IETF.RFC.`6066`.HMAC.Truncated()
                 #expect(value.bytes.isEmpty)
                 #expect(value.extensionData.type == .truncatedHMAC)
                 #expect(value.extensionData.data.isEmpty)
@@ -261,15 +261,15 @@ extension `RFC_6066_Extensions Tests` {
 
             @Test
             func `Round-trips`() throws {
-                let value = IETF.RFC.`6066`.TruncatedHMAC()
-                #expect(try IETF.RFC.`6066`.TruncatedHMAC(binary: value.bytes) == value)
+                let value = IETF.RFC.`6066`.HMAC.Truncated()
+                #expect(try IETF.RFC.`6066`.HMAC.Truncated(binary: value.bytes) == value)
             }
 
             @Test
             func `Rejects a non-empty body`() {
                 let bytes: [Byte] = [Byte(0x00)]
-                #expect(throws: IETF.RFC.`6066`.TruncatedHMAC.Error.trailingData(1)) {
-                    try IETF.RFC.`6066`.TruncatedHMAC(binary: bytes)
+                #expect(throws: IETF.RFC.`6066`.HMAC.Truncated.Error.trailingData(1)) {
+                    try IETF.RFC.`6066`.HMAC.Truncated(binary: bytes)
                 }
             }
         }
